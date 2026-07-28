@@ -57,7 +57,7 @@ class LeaveController extends Controller
                 ],
                 [
                     'office_id' => $defaultOfficeId,
-                    'status' => $leave->jenis,
+                    'status' => ($leave->jenis === 'cuti') ? 'izin' : $leave->jenis,
                     'keterangan' => $leave->alasan,
                 ]
             );
