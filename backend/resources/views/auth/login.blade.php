@@ -66,7 +66,7 @@
     <div class="login-card">
         <div class="text-center mb-4">
             <div class="brand-icon">
-                <i class="bi bi-building text-white" style="font-size: 2rem;"></i>
+                <img src="{{ asset('logo.png') }}" alt="Logo" style="width: 52px; height: 52px; border-radius: 10px;">
             </div>
             <h4 class="fw-bold text-dark mb-1">Sistem Absensi KPPN</h4>
             <p class="text-muted small">Monitoring Kehadiran Karyawan</p>
