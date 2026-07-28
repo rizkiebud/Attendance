@@ -1,0 +1,65 @@
+<?php
+
+use App\Http\Controllers\Web\AttendanceController;
+use App\Http\Controllers\Web\AuthController;
+use App\Http\Controllers\Web\DashboardController;
+use App\Http\Controllers\Web\EmployeeController;
+use App\Http\Controllers\Web\LeaveController;
+use App\Http\Controllers\Web\OfficeController;
+use Illuminate\Support\Facades\Route;
+
+// Root redirect
+Route::get('/', function () {
+    return redirect()->route('web.login');
+});
+
+// Auth routes
+Route::prefix('admin')->name('web.')->group(function () {
+    Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
+    Route::post('/login', [AuthController::class, 'login'])->name('login.post');
+    Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+
+    // Protected admin routes
+    Route::middleware(['auth', 'admin'])->group(function () {
+        Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+
+        // Karyawan
+        Route::resource('employees', EmployeeController::class)->names([
+            'index' => 'employees.index',
+            'create' => 'employees.create',
+            'store' => 'employees.store',
+            'show' => 'employees.show',
+            'edit' => 'employees.edit',
+            'update' => 'employees.update',
+            'destroy' => 'employees.destroy',
+        ]);
+        Route::post('employees/{employee}/toggle-aktif', [EmployeeController::class, 'toggleAktif'])
+            ->name('employees.toggle-aktif');
+
+        // Absensi
+        Route::prefix('attendances')->name('attendances.')->group(function () {
+            Route::get('/', [AttendanceController::class, 'index'])->name('index');
+            Route::get('/laporan', [AttendanceController::class, 'laporan'])->name('laporan');
+            Route::get('/export', [AttendanceController::class, 'exportCsv'])->name('export');
+            Route::get('/{attendance}', [AttendanceController::class, 'show'])->name('show');
+        });
+
+        // Permohonan Izin
+        Route::prefix('leaves')->name('leaves.')->group(function () {
+            Route::get('/', [LeaveController::class, 'index'])->name('index');
+            Route::get('/{leave}', [LeaveController::class, 'show'])->name('show');
+            Route::post('/{leave}/approve', [LeaveController::class, 'approve'])->name('approve');
+            Route::post('/{leave}/reject', [LeaveController::class, 'reject'])->name('reject');
+        });
+
+        // Kantor / Lokasi
+        Route::resource('offices', OfficeController::class)->names([
+            'index' => 'offices.index',
+            'create' => 'offices.create',
+            'store' => 'offices.store',
+            'edit' => 'offices.edit',
+            'update' => 'offices.update',
+            'destroy' => 'offices.destroy',
+        ])->except(['show']);
+    });
+});

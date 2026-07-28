@@ -1,0 +1,97 @@
+import React, {createContext, useContext, useState, useEffect} from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import {authService} from '../services/api';
+
+const AuthContext = createContext(null);
+
+export const AuthProvider = ({children}) => {
+  const [user, setUser] = useState(null);
+  const [employee, setEmployee] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+  useEffect(() => {
+    checkAuthState();
+  }, []);
+
+  const checkAuthState = async () => {
+    try {
+      const token = await AsyncStorage.getItem('auth_token');
+      const userData = await AsyncStorage.getItem('user_data');
+
+      if (token && userData) {
+        const parsed = JSON.parse(userData);
+        setUser(parsed);
+        setEmployee(parsed.employee);
+        setIsAuthenticated(true);
+      }
+    } catch (error) {
+      console.error('Auth state check error:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const login = async (email, password) => {
+    try {
+      const response = await authService.login(email, password);
+      const {token, user: userData} = response.data.data;
+
+      await AsyncStorage.setItem('auth_token', token);
+      await AsyncStorage.setItem('user_data', JSON.stringify(userData));
+
+      setUser(userData);
+      setEmployee(userData.employee);
+      setIsAuthenticated(true);
+
+      return {success: true};
+    } catch (error) {
+      const message =
+        error.response?.data?.message || 'Terjadi kesalahan saat login';
+      return {success: false, message};
+    }
+  };
+
+  const logout = async () => {
+    try {
+      await authService.logout();
+    } catch {}
+    await AsyncStorage.multiRemove(['auth_token', 'user_data']);
+    setUser(null);
+    setEmployee(null);
+    setIsAuthenticated(false);
+  };
+
+  const refreshUser = async () => {
+    try {
+      const response = await authService.me();
+      const userData = response.data.data;
+      await AsyncStorage.setItem('user_data', JSON.stringify(userData));
+      setUser(userData);
+      setEmployee(userData.employee);
+    } catch {}
+  };
+
+  return (
+    <AuthContext.Provider
+      value={{
+        user,
+        employee,
+        isLoading,
+        isAuthenticated,
+        login,
+        logout,
+        refreshUser,
+      }}>
+      {children}
+    </AuthContext.Provider>
+  );
+};
+
+export const useAuth = () => {
+  const context = useContext(AuthContext);
+  if (!context) {
+    throw new Error('useAuth must be used within AuthProvider');
+  }
+  return context;
+};
