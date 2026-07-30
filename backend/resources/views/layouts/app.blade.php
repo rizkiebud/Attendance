@@ -254,6 +254,13 @@
             </div>
         </div>
 
+        @php
+            $u = auth()->user();
+            $isAdmin = $u->isAdmin();
+            $jabatan = $u->employee?->jabatan;
+            $userLevels = $isAdmin ? ['full','manage','view'] : (\App\Http\Middleware\CheckJabatan::LEVELS[$jabatan] ?? ['view']);
+            $canManage = in_array('manage', $userLevels);
+        @endphp
         <nav class="sidebar-nav">
             <p class="sidebar-label">Menu Utama</p>
             <a href="{{ route('web.dashboard') }}" class="sidebar-link {{ request()->routeIs('web.dashboard') ? 'active' : '' }}">
@@ -269,6 +276,7 @@
                 <span>Laporan</span>
             </a>
 
+            @if($canManage)
             <p class="sidebar-label mt-2">Manajemen</p>
             <a href="{{ route('web.employees.index') }}" class="sidebar-link {{ request()->routeIs('web.employees.*') ? 'active' : '' }}">
                 <i class="bi bi-people"></i>
@@ -286,6 +294,7 @@
                 <i class="bi bi-geo-alt"></i>
                 <span>Kantor & Lokasi</span>
             </a>
+            @endif
         </nav>
 
         <div class="sidebar-bottom" style="position: absolute; bottom: 0; width: 100%; border-top: 1px solid rgba(255,255,255,0.1); padding: 1rem 1.25rem;">
@@ -295,7 +304,9 @@
                 </div>
                 <div class="sidebar-user-info">
                     <div style="color: #fff; font-size: 0.8rem; font-weight: 600; white-space: nowrap;">{{ auth()->user()->name }}</div>
-                    <div style="color: #94a3b8; font-size: 0.7rem; white-space: nowrap;">Administrator</div>
+                    <div style="color: #94a3b8; font-size: 0.7rem; white-space: nowrap;">
+                        {{ auth()->user()->isAdmin() ? 'Administrator' : (auth()->user()->employee?->jabatan ?? 'Karyawan') }}
+                    </div>
                 </div>
             </div>
             <form action="{{ route('web.logout') }}" method="POST">

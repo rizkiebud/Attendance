@@ -36,7 +36,7 @@ class AuthController extends Controller
 
             $user = Auth::user();
             $hasAccess = $user->isAdmin()
-                || ($user->employee && in_array($user->employee->jabatan, ['Kepala Seksi', 'Staf']));
+                || ($user->employee && in_array($user->employee->jabatan, ['Supervisor', 'HRD', 'Staff'  ]));
 
             if (!$hasAccess) {
                 Auth::logout();

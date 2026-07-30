@@ -19,10 +19,21 @@ Route::prefix('admin')->name('web.')->group(function () {
     Route::post('/login', [AuthController::class, 'login'])->name('login.post');
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
-    // Protected admin routes
-    Route::middleware(['auth', 'admin'])->group(function () {
+    // Protected routes — minimal view
+    Route::middleware(['auth', 'jabatan:view'])->group(function () {
         Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
+        // Absensi — view-only
+        Route::prefix('attendances')->name('attendances.')->group(function () {
+            Route::get('/', [AttendanceController::class, 'index'])->name('index');
+            Route::get('/laporan', [AttendanceController::class, 'laporan'])->name('laporan');
+            Route::get('/export', [AttendanceController::class, 'exportCsv'])->name('export');
+            Route::get('/{attendance}', [AttendanceController::class, 'show'])->name('show');
+        });
+    });
+
+    // Manage level — manage & full
+    Route::middleware(['auth', 'jabatan:manage'])->group(function () {
         // Karyawan
         Route::resource('employees', EmployeeController::class)->names([
             'index' => 'employees.index',
@@ -35,14 +46,6 @@ Route::prefix('admin')->name('web.')->group(function () {
         ]);
         Route::post('employees/{employee}/toggle-aktif', [EmployeeController::class, 'toggleAktif'])
             ->name('employees.toggle-aktif');
-
-        // Absensi
-        Route::prefix('attendances')->name('attendances.')->group(function () {
-            Route::get('/', [AttendanceController::class, 'index'])->name('index');
-            Route::get('/laporan', [AttendanceController::class, 'laporan'])->name('laporan');
-            Route::get('/export', [AttendanceController::class, 'exportCsv'])->name('export');
-            Route::get('/{attendance}', [AttendanceController::class, 'show'])->name('show');
-        });
 
         // Permohonan Izin
         Route::prefix('leaves')->name('leaves.')->group(function () {
