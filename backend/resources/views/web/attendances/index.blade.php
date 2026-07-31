@@ -95,7 +95,7 @@
     <div class="card-body p-0">
         @if($attendances->isEmpty())
             <div class="text-center py-5 text-muted">
-                <i class="bi bi-calendar-x fs-1 d-block mb-2"></i>
+                <i class="bi bi-calendar-x empty-state-icon d-block mb-2"></i>
                 <p>Tidak ada data absensi untuk tanggal ini</p>
             </div>
         @else

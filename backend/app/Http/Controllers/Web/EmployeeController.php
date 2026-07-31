@@ -13,9 +13,11 @@ use Illuminate\Support\Facades\Validator;
 
 class EmployeeController extends Controller
 {
+    use FilterByDepartemen;
+
     public function index(Request $request)
     {
-        $query = Employee::with('user');
+        $query = $this->filterEmployeeQuery(Employee::with('user'));
 
         if ($request->search) {
             $search = $request->search;

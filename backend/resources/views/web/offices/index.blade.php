@@ -77,7 +77,7 @@
         <div class="col-12">
             <div class="card table-card">
                 <div class="card-body text-center py-5 text-muted">
-                    <i class="bi bi-building fs-1 d-block mb-2"></i>
+                    <i class="bi bi-building empty-state-icon d-block mb-2"></i>
                     <p>Belum ada data kantor</p>
                     <a href="{{ route('web.offices.create') }}" class="btn btn-primary btn-sm">Tambah Kantor</a>
                 </div>

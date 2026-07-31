@@ -7,12 +7,15 @@ use App\Models\Attendance;
 use App\Models\LeaveRequest;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class LeaveController extends Controller
 {
+    use FilterByDepartemen;
+
     public function index(Request $request)
     {
-        $query = LeaveRequest::with('employee.user');
+        $query = $this->filterLeaveQuery(LeaveRequest::with('employee.user'));
 
         if ($request->status) {
             $query->where('status', $request->status);
@@ -42,7 +45,7 @@ class LeaveController extends Controller
         $leave->update([
             'status' => 'disetujui',
             'catatan_admin' => $request->catatan,
-            'approved_by' => auth()->id(),
+            'approved_by' => Auth::id(),
             'approved_at' => now(),
         ]);
 
@@ -78,7 +81,7 @@ class LeaveController extends Controller
         $leave->update([
             'status' => 'ditolak',
             'catatan_admin' => $request->catatan,
-            'approved_by' => auth()->id(),
+            'approved_by' => Auth::id(),
             'approved_at' => now(),
         ]);
 

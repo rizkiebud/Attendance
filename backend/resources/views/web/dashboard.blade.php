@@ -131,7 +131,7 @@
     <div class="card-body p-0">
         @if($absensiToday->isEmpty())
             <div class="text-center py-5 text-muted">
-                <i class="bi bi-calendar-x fs-1 mb-2 d-block"></i>
+                <i class="bi bi-calendar-x empty-state-icon mb-2 d-block"></i>
                 <p>Belum ada data absensi hari ini</p>
             </div>
         @else

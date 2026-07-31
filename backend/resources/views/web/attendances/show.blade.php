@@ -16,40 +16,42 @@
             <div class="card-header bg-white border-bottom py-3">
                 <h6 class="mb-0 fw-semibold">Informasi Karyawan</h6>
             </div>
-            <div class="card-body">
+            <div class="card-body p-0">
                 <table class="table table-borderless mb-0">
-                    <tr>
-                        <td class="text-muted small" width="130">Nama</td>
-                        <td class="fw-semibold">{{ $attendance->employee->nama }}</td>
-                    </tr>
-                    <tr>
-                        <td class="text-muted small">NIP</td>
-                        <td>{{ $attendance->employee->nip ?? '-' }}</td>
-                    </tr>
-                    <tr>
-                        <td class="text-muted small">Jabatan</td>
-                        <td>{{ $attendance->employee->jabatan ?? '-' }}</td>
-                    </tr>
-                    <tr>
-                        <td class="text-muted small">Departemen</td>
-                        <td>{{ $attendance->employee->departemen ?? '-' }}</td>
-                    </tr>
-                    <tr>
-                        <td class="text-muted small">Tanggal</td>
-                        <td>{{ $attendance->tanggal->locale('id')->isoFormat('dddd, D MMMM Y') }}</td>
-                    </tr>
-                    <tr>
-                        <td class="text-muted small">Kantor</td>
-                        <td>{{ $attendance->office->nama }}</td>
-                    </tr>
-                    <tr>
-                        <td class="text-muted small">Status</td>
-                        <td>
-                            <span class="badge badge-{{ $attendance->status }}">
-                                {{ ucfirst(str_replace('_', ' ', $attendance->status)) }}
-                            </span>
-                        </td>
-                    </tr>
+                    <tbody>
+                        <tr>
+                            <td class="text-muted small" width="130">Nama</td>
+                            <td class="fw-semibold">{{ $attendance->employee->nama }}</td>
+                        </tr>
+                        <tr>
+                            <td class="text-muted small">NIP</td>
+                            <td>{{ $attendance->employee->nip ?? '-' }}</td>
+                        </tr>
+                        <tr>
+                            <td class="text-muted small">Jabatan</td>
+                            <td>{{ $attendance->employee->jabatan ?? '-' }}</td>
+                        </tr>
+                        <tr>
+                            <td class="text-muted small">Departemen</td>
+                            <td>{{ $attendance->employee->departemen ?? '-' }}</td>
+                        </tr>
+                        <tr>
+                            <td class="text-muted small">Tanggal</td>
+                            <td>{{ $attendance->tanggal->locale('id')->isoFormat('dddd, D MMMM Y') }}</td>
+                        </tr>
+                        <tr>
+                            <td class="text-muted small">Kantor</td>
+                            <td>{{ $attendance->office->nama }}</td>
+                        </tr>
+                        <tr>
+                            <td class="text-muted small">Status</td>
+                            <td>
+                                <span class="badge badge-{{ $attendance->status }}">
+                                    {{ ucfirst(str_replace('_', ' ', $attendance->status)) }}
+                                </span>
+                            </td>
+                        </tr>
+                    </tbody>
                 </table>
             </div>
         </div>

@@ -10,12 +10,15 @@ use Illuminate\Http\Request;
 
 class AttendanceController extends Controller
 {
+    use FilterByDepartemen;
+
     public function index(Request $request)
     {
         $tanggal = $request->tanggal ? Carbon::parse($request->tanggal) : today();
 
-        $query = Attendance::with(['employee.user', 'office'])
-            ->whereDate('tanggal', $tanggal);
+        $query = $this->filterAttendanceQuery(
+            Attendance::with(['employee.user', 'office'])->whereDate('tanggal', $tanggal)
+        );
 
         if ($request->employee_id) {
             $query->where('employee_id', $request->employee_id);
@@ -27,14 +30,15 @@ class AttendanceController extends Controller
 
         $attendances = $query->orderBy('jam_masuk', 'asc')->paginate(20)->withQueryString();
 
-        $employees = Employee::where('aktif', true)->orderBy('nama')->get();
+        $employees = $this->filterEmployeeQuery(Employee::where('aktif', true))->orderBy('nama')->get();
 
+        $dep = $this->departemenFilter();
         $stats = [
-            'hadir' => Attendance::whereDate('tanggal', $tanggal)->whereIn('status', ['hadir', 'terlambat'])->count(),
-            'terlambat' => Attendance::whereDate('tanggal', $tanggal)->where('status', 'terlambat')->count(),
-            'izin' => Attendance::whereDate('tanggal', $tanggal)->whereIn('status', ['izin', 'sakit'])->count(),
-            'tidak_hadir' => Employee::where('aktif', true)->count() -
-                Attendance::whereDate('tanggal', $tanggal)->whereIn('status', ['hadir', 'terlambat', 'izin', 'sakit'])->count(),
+            'hadir' => $this->filterAttendanceQuery(Attendance::whereDate('tanggal', $tanggal))->whereIn('status', ['hadir', 'terlambat'])->count(),
+            'terlambat' => $this->filterAttendanceQuery(Attendance::whereDate('tanggal', $tanggal))->where('status', 'terlambat')->count(),
+            'izin' => $this->filterAttendanceQuery(Attendance::whereDate('tanggal', $tanggal))->whereIn('status', ['izin', 'sakit'])->count(),
+            'tidak_hadir' => $this->filterEmployeeQuery(Employee::where('aktif', true))->count()
+                - $this->filterAttendanceQuery(Attendance::whereDate('tanggal', $tanggal))->whereIn('status', ['hadir', 'terlambat', 'izin', 'sakit'])->count(),
         ];
 
         return view('web.attendances.index', compact('attendances', 'employees', 'tanggal', 'stats'));
@@ -52,9 +56,11 @@ class AttendanceController extends Controller
         $tahun = $request->tahun ?? now()->year;
         $employeeId = $request->employee_id;
 
-        $query = Attendance::with(['employee.user', 'office'])
-            ->whereYear('tanggal', $tahun)
-            ->whereMonth('tanggal', $bulan);
+        $query = $this->filterAttendanceQuery(
+            Attendance::with(['employee.user', 'office'])
+                ->whereYear('tanggal', $tahun)
+                ->whereMonth('tanggal', $bulan)
+        );
 
         if ($employeeId) {
             $query->where('employee_id', $employeeId);
@@ -76,7 +82,7 @@ class AttendanceController extends Controller
             ];
         })->values();
 
-        $employees = Employee::where('aktif', true)->orderBy('nama')->get();
+        $employees = $this->filterEmployeeQuery(Employee::where('aktif', true))->orderBy('nama')->get();
 
         $months = [
             1 => 'Januari', 2 => 'Februari', 3 => 'Maret', 4 => 'April',
@@ -94,12 +100,11 @@ class AttendanceController extends Controller
         $bulan = $request->bulan ?? now()->month;
         $tahun = $request->tahun ?? now()->year;
 
-        $attendances = Attendance::with(['employee', 'office'])
-            ->whereYear('tanggal', $tahun)
-            ->whereMonth('tanggal', $bulan)
-            ->orderBy('tanggal')
-            ->orderBy('employee_id')
-            ->get();
+        $attendances = $this->filterAttendanceQuery(
+            Attendance::with(['employee', 'office'])
+                ->whereYear('tanggal', $tahun)
+                ->whereMonth('tanggal', $bulan)
+        )->orderBy('tanggal')->orderBy('employee_id')->get();
 
         $filename = "absensi_{$bulan}_{$tahun}.csv";
 

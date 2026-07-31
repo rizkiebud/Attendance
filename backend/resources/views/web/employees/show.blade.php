@@ -27,11 +27,11 @@
     <div class="col-lg-4">
         <div class="card table-card">
             <div class="card-body text-center py-4">
-                <div style="width:90px; height:90px; border-radius:50%; background:#dbeafe; margin:0 auto 1rem; display:flex; align-items:center; justify-content:center; overflow:hidden;">
+                <div class="avatar-circle avatar-circle-lg mx-auto mb-3">
                     @if($employee->foto)
-                        <img src="{{ asset('storage/' . $employee->foto) }}" style="width:100%; height:100%; object-fit:cover;">
+                        <img src="{{ asset('storage/' . $employee->foto) }}" alt="{{ $employee->nama }}">
                     @else
-                        <i class="bi bi-person-fill" style="font-size:2.5rem; color:#1a56db;"></i>
+                        <i class="bi bi-person-fill"></i>
                     @endif
                 </div>
                 <h5 class="fw-bold mb-1">{{ $employee->nama }}</h5>
@@ -91,7 +91,7 @@
             <div class="card-body p-0">
                 @if($employee->attendances->isEmpty())
                     <div class="text-center py-4 text-muted">
-                        <i class="bi bi-calendar-x d-block fs-2 mb-2"></i>
+                        <i class="bi bi-calendar-x empty-state-icon d-block mb-2"></i>
                         <small>Belum ada data absensi</small>
                     </div>
                 @else

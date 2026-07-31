@@ -58,7 +58,7 @@
     <div class="card-body p-0">
         @if($rekapKaryawan->isEmpty())
             <div class="text-center py-5 text-muted">
-                <i class="bi bi-file-earmark-x fs-1 d-block mb-2"></i>
+                <i class="bi bi-file-earmark-x empty-state-icon d-block mb-2"></i>
                 <p>Tidak ada data untuk periode ini</p>
             </div>
         @else

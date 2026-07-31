@@ -40,7 +40,7 @@
     <div class="card-body p-0">
         @if($leaves->isEmpty())
             <div class="text-center py-5 text-muted">
-                <i class="bi bi-clipboard-x fs-1 d-block mb-2"></i>
+                <i class="bi bi-clipboard-x empty-state-icon d-block mb-2"></i>
                 <p>Tidak ada permohonan izin</p>
             </div>
         @else

@@ -48,7 +48,7 @@
     <div class="card-body p-0">
         @if($employees->isEmpty())
             <div class="text-center py-5 text-muted">
-                <i class="bi bi-people fs-1 d-block mb-2"></i>
+                <i class="bi bi-people empty-state-icon d-block mb-2"></i>
                 <p>Belum ada data karyawan</p>
                 <a href="{{ route('web.employees.create') }}" class="btn btn-primary btn-sm">Tambah Karyawan</a>
             </div>
@@ -70,12 +70,11 @@
                         <tr>
                             <td>
                                 <div class="d-flex align-items-center gap-2">
-                                    <div style="width:36px; height:36px; border-radius:50%; background:#dbeafe; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+                                    <div class="avatar-circle avatar-circle-sm">
                                         @if($employee->foto)
-                                            <img src="{{ asset('storage/' . $employee->foto) }}" alt="{{ $employee->nama }}"
-                                                style="width:36px; height:36px; border-radius:50%; object-fit:cover;">
+                                            <img src="{{ asset('storage/' . $employee->foto) }}" alt="{{ $employee->nama }}">
                                         @else
-                                            <i class="bi bi-person-fill" style="color:#1a56db;"></i>
+                                            <i class="bi bi-person-fill"></i>
                                         @endif
                                     </div>
                                     <div>

@@ -22,64 +22,66 @@
                     {{ ucfirst($leave->status) }}
                 </span>
             </div>
-            <div class="card-body">
-                <table class="table table-borderless">
-                    <tr>
-                        <td class="text-muted small" width="140">Karyawan</td>
-                        <td class="fw-semibold">{{ $leave->employee->nama }}</td>
-                    </tr>
-                    <tr>
-                        <td class="text-muted small">Departemen</td>
-                        <td>{{ $leave->employee->departemen ?? '-' }}</td>
-                    </tr>
-                    <tr>
-                        <td class="text-muted small">Jenis</td>
-                        <td>{{ ucfirst($leave->jenis) }}</td>
-                    </tr>
-                    <tr>
-                        <td class="text-muted small">Tanggal Mulai</td>
-                        <td>{{ $leave->tanggal_mulai->locale('id')->isoFormat('D MMMM Y') }}</td>
-                    </tr>
-                    <tr>
-                        <td class="text-muted small">Tanggal Selesai</td>
-                        <td>{{ $leave->tanggal_selesai->locale('id')->isoFormat('D MMMM Y') }}</td>
-                    </tr>
-                    <tr>
-                        <td class="text-muted small">Durasi</td>
-                        <td><strong>{{ $leave->durasi }} hari</strong></td>
-                    </tr>
-                    <tr>
-                        <td class="text-muted small">Alasan</td>
-                        <td>{{ $leave->alasan }}</td>
-                    </tr>
-                    @if($leave->dokumen)
-                    <tr>
-                        <td class="text-muted small">Dokumen</td>
-                        <td>
-                            <a href="{{ asset('storage/' . $leave->dokumen) }}" target="_blank" class="btn btn-sm btn-outline-primary">
-                                <i class="bi bi-paperclip me-1"></i>Lihat Dokumen
-                            </a>
-                        </td>
-                    </tr>
-                    @endif
-                    <tr>
-                        <td class="text-muted small">Diajukan</td>
-                        <td>{{ $leave->created_at->locale('id')->isoFormat('D MMMM Y, HH:mm') }}</td>
-                    </tr>
-                    @if($leave->approved_at)
-                    <tr>
-                        <td class="text-muted small">Diproses oleh</td>
-                        <td>{{ $leave->approvedBy->name ?? '-' }} pada {{ $leave->approved_at->format('d/m/Y H:i') }}</td>
-                    </tr>
-                    @endif
-                    @if($leave->catatan_admin)
-                    <tr>
-                        <td class="text-muted small">Catatan Admin</td>
-                        <td class="text-{{ $leave->status == 'ditolak' ? 'danger' : 'success' }}">
-                            {{ $leave->catatan_admin }}
-                        </td>
-                    </tr>
-                    @endif
+            <div class="card-body p-0">
+                <table class="table table-borderless mb-0">
+                    <tbody>
+                        <tr>
+                            <td class="text-muted small" width="140">Karyawan</td>
+                            <td class="fw-semibold">{{ $leave->employee->nama }}</td>
+                        </tr>
+                        <tr>
+                            <td class="text-muted small">Departemen</td>
+                            <td>{{ $leave->employee->departemen ?? '-' }}</td>
+                        </tr>
+                        <tr>
+                            <td class="text-muted small">Jenis</td>
+                            <td>{{ ucfirst($leave->jenis) }}</td>
+                        </tr>
+                        <tr>
+                            <td class="text-muted small">Tanggal Mulai</td>
+                            <td>{{ $leave->tanggal_mulai->locale('id')->isoFormat('D MMMM Y') }}</td>
+                        </tr>
+                        <tr>
+                            <td class="text-muted small">Tanggal Selesai</td>
+                            <td>{{ $leave->tanggal_selesai->locale('id')->isoFormat('D MMMM Y') }}</td>
+                        </tr>
+                        <tr>
+                            <td class="text-muted small">Durasi</td>
+                            <td><strong>{{ $leave->durasi }} hari</strong></td>
+                        </tr>
+                        <tr>
+                            <td class="text-muted small">Alasan</td>
+                            <td>{{ $leave->alasan }}</td>
+                        </tr>
+                        @if($leave->dokumen)
+                        <tr>
+                            <td class="text-muted small">Dokumen</td>
+                            <td>
+                                <a href="{{ asset('storage/' . $leave->dokumen) }}" target="_blank" class="btn btn-sm btn-outline-primary">
+                                    <i class="bi bi-paperclip me-1"></i>Lihat Dokumen
+                                </a>
+                            </td>
+                        </tr>
+                        @endif
+                        <tr>
+                            <td class="text-muted small">Diajukan</td>
+                            <td>{{ $leave->created_at->locale('id')->isoFormat('D MMMM Y, HH:mm') }}</td>
+                        </tr>
+                        @if($leave->approved_at)
+                        <tr>
+                            <td class="text-muted small">Diproses oleh</td>
+                            <td>{{ $leave->approvedBy->name ?? '-' }} pada {{ $leave->approved_at->format('d/m/Y H:i') }}</td>
+                        </tr>
+                        @endif
+                        @if($leave->catatan_admin)
+                        <tr>
+                            <td class="text-muted small">Catatan Admin</td>
+                            <td class="text-{{ $leave->status == 'ditolak' ? 'danger' : 'success' }}">
+                                {{ $leave->catatan_admin }}
+                            </td>
+                        </tr>
+                        @endif
+                    </tbody>
                 </table>
 
                 @if($leave->status === 'menunggu')

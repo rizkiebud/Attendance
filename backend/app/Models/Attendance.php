@@ -38,6 +38,8 @@ class Attendance extends Model
         'jarak_keluar' => 'decimal:2',
     ];
 
+    protected $appends = ['durasi_kerja'];
+
     public function employee()
     {
         return $this->belongsTo(Employee::class);

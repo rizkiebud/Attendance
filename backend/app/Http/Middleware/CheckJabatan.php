@@ -4,6 +4,7 @@ namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\Response;
 
 class CheckJabatan
@@ -27,7 +28,8 @@ class CheckJabatan
      */
     public function handle(Request $request, Closure $next, string $minLevel = 'view'): Response
     {
-        $user = auth()->user();
+        /** @var \App\Models\User|null $user */
+        $user = Auth::user();
 
         if (!$user) {
             return redirect()->route('web.login')->with('error', 'Silakan login terlebih dahulu.');

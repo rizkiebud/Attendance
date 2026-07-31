@@ -34,6 +34,7 @@ class AuthController extends Controller
         if (Auth::attempt($credentials, $remember)) {
             $request->session()->regenerate();
 
+            /** @var \App\Models\User $user */
             $user = Auth::user();
             $hasAccess = $user->isAdmin()
                 || ($user->employee && in_array($user->employee->jabatan, ['Kepala Seksi', 'Staf']));
