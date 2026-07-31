@@ -11,6 +11,7 @@ import {
   StatusBar,
   Image,
 } from 'react-native';
+import {SafeAreaView} from 'react-native-safe-area-context';
 import Icon from 'react-native-vector-icons/Ionicons';
 import {useFocusEffect} from '@react-navigation/native';
 import {useAuth} from '../context/AuthContext';
@@ -87,7 +88,7 @@ const ProfilScreen = () => {
   );
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
       <StatusBar barStyle="light-content" backgroundColor={COLORS.primaryDark} />
 
       {/* Header */}
@@ -188,7 +189,7 @@ const ProfilScreen = () => {
 
         <Text style={styles.versionText}>Absensi KPPN v1.0.0</Text>
       </ScrollView>
-    </View>
+    </SafeAreaView>
   );
 };
 

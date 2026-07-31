@@ -10,6 +10,7 @@ import {
   ActivityIndicator,
   Platform,
 } from 'react-native';
+import {SafeAreaView} from 'react-native-safe-area-context';
 import Icon from 'react-native-vector-icons/Ionicons';
 import {leaveService} from '../services/api';
 import {COLORS} from '../utils/colors';
@@ -71,7 +72,8 @@ const AjukanIzinScreen = ({navigation}) => {
   };
 
   return (
-    <ScrollView style={styles.container} keyboardShouldPersistTaps="handled">
+    <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
+    <ScrollView keyboardShouldPersistTaps="handled">
       <View style={styles.content}>
 
         {/* Jenis */}
@@ -169,6 +171,7 @@ const AjukanIzinScreen = ({navigation}) => {
         </TouchableOpacity>
       </View>
     </ScrollView>
+    </SafeAreaView>
   );
 };
 

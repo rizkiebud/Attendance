@@ -8,6 +8,7 @@ import {
   ActivityIndicator,
   StatusBar,
 } from 'react-native';
+import {SafeAreaView} from 'react-native-safe-area-context';
 import Icon from 'react-native-vector-icons/Ionicons';
 import {attendanceService} from '../services/api';
 import {COLORS, STATUS_COLORS} from '../utils/colors';
@@ -71,8 +72,8 @@ const HistoriScreen = ({navigation}) => {
       style={styles.historyItem}
       onPress={() => navigation.navigate('DetailAbsensi', {attendance: item})}>
       <View style={styles.dateBox}>
-        <Text style={styles.dateDay}>{new Date(item.tanggal).getDate()}</Text>
-        <Text style={styles.dateMonth}>{getNamaBulan(new Date(item.tanggal).getMonth() + 1).substring(0, 3)}</Text>
+        <Text style={styles.dateDay}>{item.tanggal.split('-')[2]?.replace(/^0/, '')}</Text>
+        <Text style={styles.dateMonth}>{getNamaBulan(parseInt(item.tanggal.split('-')[1])).substring(0, 3)}</Text>
       </View>
       <View style={styles.itemInfo}>
         <Text style={styles.itemDate}>{formatTanggal(item.tanggal)}</Text>
@@ -81,6 +82,9 @@ const HistoriScreen = ({navigation}) => {
           {'  '}
           <Icon name="log-out-outline" size={12} color={COLORS.danger} />{' '}
           {item.jam_keluar ? formatTime(item.jam_keluar) : '--:--'}
+          {item.durasi_kerja ? (
+            <Text style={{color: COLORS.primary}}>{'  '}<Icon name="hourglass-outline" size={11} color={COLORS.primary} /> {item.durasi_kerja} jam</Text>
+          ) : null}
         </Text>
         {item.jarak_masuk && (
           <Text style={styles.itemJarak}>
@@ -93,7 +97,7 @@ const HistoriScreen = ({navigation}) => {
   );
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
       <StatusBar barStyle="light-content" backgroundColor={COLORS.primaryDark} />
 
       <View style={styles.header}>
@@ -148,7 +152,7 @@ const HistoriScreen = ({navigation}) => {
           }
         />
       )}
-    </View>
+    </SafeAreaView>
   );
 };
 

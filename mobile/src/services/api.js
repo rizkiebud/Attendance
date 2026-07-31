@@ -2,8 +2,8 @@ import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // Ganti dengan IP server Laravel Anda
-export const BASE_URL = 'http://10.0.2.2:8000'; // Android emulator
-// export const BASE_URL = 'http://192.168.1.x:8000'; // Perangkat fisik
+// export const BASE_URL = 'http://10.0.2.2:8000'; // Android emulator
+export const BASE_URL = 'http://103.175.217.244:22180'; // Production server
 
 const API_URL = `${BASE_URL}/api`;
 
@@ -11,7 +11,6 @@ const api = axios.create({
   baseURL: API_URL,
   timeout: 30000,
   headers: {
-    'Content-Type': 'application/json',
     Accept: 'application/json',
   },
 });
@@ -66,22 +65,13 @@ export const attendanceService = {
   getToday: () => api.get('/attendance/today'),
   getHistory: (bulan, tahun) =>
     api.get('/attendance/history', {params: {bulan, tahun}}),
-  checkIn: formData =>
-    api.post('/attendance/check-in', formData, {
-      headers: {'Content-Type': 'multipart/form-data'},
-    }),
-  checkOut: formData =>
-    api.post('/attendance/check-out', formData, {
-      headers: {'Content-Type': 'multipart/form-data'},
-    }),
+  checkIn: formData => api.post('/attendance/check-in', formData),
+  checkOut: formData => api.post('/attendance/check-out', formData),
 };
 
 // Izin
 export const leaveService = {
   getAll: (page = 1) => api.get('/leave', {params: {page}}),
   getById: id => api.get(`/leave/${id}`),
-  create: formData =>
-    api.post('/leave', formData, {
-      headers: {'Content-Type': 'multipart/form-data'},
-    }),
+  create: formData => api.post('/leave', formData),
 };

@@ -5,6 +5,7 @@ import {
   StyleSheet,
   ScrollView,
 } from 'react-native';
+import {SafeAreaView} from 'react-native-safe-area-context';
 import Icon from 'react-native-vector-icons/Ionicons';
 import {COLORS, STATUS_COLORS} from '../utils/colors';
 import {formatTanggal, formatTime} from '../utils/helpers';
@@ -24,7 +25,8 @@ const DetailAbsensiScreen = ({route}) => {
   );
 
   return (
-    <ScrollView style={styles.container}>
+    <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
+    <ScrollView>
 
       {/* Status Header */}
       <View style={[styles.statusHeader, {backgroundColor: status.bg}]}>
@@ -109,6 +111,7 @@ const DetailAbsensiScreen = ({route}) => {
         )}
       </View>
     </ScrollView>
+    </SafeAreaView>
   );
 };
 

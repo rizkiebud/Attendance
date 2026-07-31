@@ -9,6 +9,7 @@ import {
   StatusBar,
   Image,
 } from 'react-native';
+import {SafeAreaView} from 'react-native-safe-area-context';
 import Icon from 'react-native-vector-icons/Ionicons';
 import {useFocusEffect} from '@react-navigation/native';
 import {useAuth} from '../context/AuthContext';
@@ -53,7 +54,7 @@ const DashboardScreen = ({navigation}) => {
   };
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
       <StatusBar barStyle="light-content" backgroundColor={COLORS.primaryDark} />
 
       {/* Header */}
@@ -62,7 +63,7 @@ const DashboardScreen = ({navigation}) => {
           <Text style={styles.greeting}>{getGreeting()},</Text>
           <Text style={styles.userName}>{employee?.nama || 'Karyawan'}</Text>
           <Text style={styles.dateText}>
-            {getNamaHari()}, {formatTanggal(new Date().toISOString().split('T')[0])}
+            {data?.current_date ? data.current_date : `${getNamaHari()}, ${formatTanggal(new Date().toISOString().split('T')[0])}`}
           </Text>
         </View>
         <View style={styles.avatarBox}>
@@ -178,7 +179,7 @@ const DashboardScreen = ({navigation}) => {
           </>
         )}
       </ScrollView>
-    </View>
+    </SafeAreaView>
   );
 };
 

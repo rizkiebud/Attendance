@@ -3,6 +3,7 @@ import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import {ActivityIndicator, View} from 'react-native';
+import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import Icon from 'react-native-vector-icons/Ionicons';
 
 import {useAuth} from '../context/AuthContext';
@@ -22,6 +23,8 @@ const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 
 const MainTabs = () => {
+  const insets = useSafeAreaInsets();
+
   return (
     <Tab.Navigator
       screenOptions={({route}) => ({
@@ -31,9 +34,9 @@ const MainTabs = () => {
         tabBarStyle: {
           backgroundColor: COLORS.white,
           borderTopColor: COLORS.border,
-          height: 60,
-          paddingBottom: 8,
-          paddingTop: 4,
+          height: 56 + insets.bottom,
+          paddingBottom: insets.bottom,
+          paddingTop: 6,
         },
         tabBarLabelStyle: {
           fontSize: 11,
@@ -84,7 +87,8 @@ const AppNavigator = () => {
               options={{
                 headerShown: true,
                 title: 'Ajukan Permohonan',
-                headerTintColor: COLORS.primary,
+                headerTintColor: COLORS.white,
+                headerStyle: {backgroundColor: COLORS.primaryDark},
                 headerBackTitle: 'Kembali',
               }}
             />
@@ -94,7 +98,8 @@ const AppNavigator = () => {
               options={{
                 headerShown: true,
                 title: 'Detail Absensi',
-                headerTintColor: COLORS.primary,
+                headerTintColor: COLORS.white,
+                headerStyle: {backgroundColor: COLORS.primaryDark},
                 headerBackTitle: 'Kembali',
               }}
             />

@@ -8,6 +8,7 @@ import {
   ActivityIndicator,
   StatusBar,
 } from 'react-native';
+import {SafeAreaView} from 'react-native-safe-area-context';
 import Icon from 'react-native-vector-icons/Ionicons';
 import {leaveService} from '../services/api';
 import {COLORS} from '../utils/colors';
@@ -110,7 +111,7 @@ const IzinScreen = ({navigation}) => {
   };
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
       <StatusBar barStyle="light-content" backgroundColor={COLORS.primaryDark} />
 
       <View style={styles.header}>
@@ -153,7 +154,7 @@ const IzinScreen = ({navigation}) => {
           }
         />
       )}
-    </View>
+    </SafeAreaView>
   );
 };
 

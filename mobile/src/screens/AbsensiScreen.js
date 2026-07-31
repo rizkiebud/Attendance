@@ -10,7 +10,8 @@ import {
   StatusBar,
   Platform,
 } from 'react-native';
-import Geolocation from 'react-native-geolocation-service';
+import {SafeAreaView} from 'react-native-safe-area-context';
+import Geolocation from '@react-native-community/geolocation';
 import {request, PERMISSIONS, RESULTS} from 'react-native-permissions';
 import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
 import Icon from 'react-native-vector-icons/Ionicons';
@@ -95,8 +96,27 @@ const AbsensiScreen = () => {
         setIsLocating(false);
       },
       error => {
-        setLocationError('Gagal mendapatkan lokasi: ' + error.message);
-        setIsLocating(false);
+        // Fallback: coba tanpa high accuracy
+        Geolocation.getCurrentPosition(
+          pos => {
+            const {latitude, longitude, accuracy} = pos.coords;
+            setCurrentLocation({latitude, longitude, accuracy});
+            if (selectedOffice) {
+              const dist = hitungJarak(
+                latitude, longitude,
+                parseFloat(selectedOffice.latitude),
+                parseFloat(selectedOffice.longitude),
+              );
+              setJarak(dist);
+            }
+            setIsLocating(false);
+          },
+          err => {
+            setLocationError('Gagal mendapatkan lokasi: ' + err.message);
+            setIsLocating(false);
+          },
+          {enableHighAccuracy: false, timeout: 20000, maximumAge: 60000},
+        );
       },
       {
         enableHighAccuracy: true,
@@ -205,7 +225,13 @@ const AbsensiScreen = () => {
       setFotoUri(null);
       await loadData();
     } catch (err) {
-      const msg = err.response?.data?.message || 'Terjadi kesalahan';
+      const data = err.response?.data;
+      let msg = 'Terjadi kesalahan';
+      if (data?.errors) {
+        msg = Object.values(data.errors).flat().join('\n');
+      } else if (data?.message) {
+        msg = data.message;
+      }
       Alert.alert('Gagal', msg);
     } finally {
       setIsLoading(false);
@@ -216,7 +242,7 @@ const AbsensiScreen = () => {
   const statusColors = todayAttendance?.status ? STATUS_COLORS[todayAttendance.status] : null;
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
       <StatusBar barStyle="light-content" backgroundColor={COLORS.primaryDark} />
 
       <View style={styles.header}>
@@ -246,6 +272,14 @@ const AbsensiScreen = () => {
                   {todayAttendance.jam_keluar ? formatTime(todayAttendance.jam_keluar) : '--:--'}
                 </Text>
               </View>
+              {todayAttendance.jam_keluar && todayAttendance.durasi_kerja && (
+                <View style={styles.timeInfoItem}>
+                  <Text style={styles.timeInfoLabel}>Durasi</Text>
+                  <Text style={[styles.timeInfoValue, {color: COLORS.primary}]}>
+                    {todayAttendance.durasi_kerja} jam
+                  </Text>
+                </View>
+              )}
             </View>
           </View>
         )}
@@ -353,10 +387,10 @@ const AbsensiScreen = () => {
             style={[
               styles.absenButton,
               {backgroundColor: COLORS.success},
-              (!currentLocation || isLoading) && styles.buttonDisabled,
+              isLoading && styles.buttonDisabled,
             ]}
             onPress={() => handleAbsensi('masuk')}
-            disabled={!currentLocation || isLoading}>
+            disabled={isLoading}>
             {isLoading ? (
               <ActivityIndicator color={COLORS.white} />
             ) : (
@@ -373,10 +407,10 @@ const AbsensiScreen = () => {
             style={[
               styles.absenButton,
               {backgroundColor: COLORS.danger},
-              (!currentLocation || isLoading) && styles.buttonDisabled,
+              isLoading && styles.buttonDisabled,
             ]}
             onPress={() => handleAbsensi('keluar')}
-            disabled={!currentLocation || isLoading}>
+            disabled={isLoading}>
             {isLoading ? (
               <ActivityIndicator color={COLORS.white} />
             ) : (
@@ -395,7 +429,7 @@ const AbsensiScreen = () => {
           </View>
         )}
       </ScrollView>
-    </View>
+    </SafeAreaView>
   );
 };
 

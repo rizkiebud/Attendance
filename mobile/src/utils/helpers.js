@@ -32,6 +32,7 @@ export function formatTime(timeStr) {
 
 /**
  * Format tanggal Indonesia
+ * Parse YYYY-MM-DD sebagai UTC agar tidak geser timezone
  */
 export function formatTanggal(dateStr) {
   if (!dateStr) return '-';
@@ -39,8 +40,8 @@ export function formatTanggal(dateStr) {
     'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
     'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember',
   ];
-  const date = new Date(dateStr);
-  return `${date.getDate()} ${months[date.getMonth()]} ${date.getFullYear()}`;
+  const [y, m, d] = dateStr.split('-');
+  return `${parseInt(d)} ${months[parseInt(m) - 1]} ${y}`;
 }
 
 /**
