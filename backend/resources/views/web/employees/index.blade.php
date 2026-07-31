@@ -57,6 +57,7 @@
                 <table class="table table-hover mb-0">
                     <thead>
                         <tr>
+                            <th class="text-center" style="width:40px;">#</th>
                             <th>Karyawan</th>
                             <th>NIP</th>
                             <th>Jabatan</th>
@@ -68,6 +69,7 @@
                     <tbody>
                         @foreach($employees as $employee)
                         <tr>
+                            <td class="text-center text-muted">{{ $loop->iteration }}</td>
                             <td>
                                 <div class="d-flex align-items-center gap-2">
                                     <div class="avatar-circle avatar-circle-sm">

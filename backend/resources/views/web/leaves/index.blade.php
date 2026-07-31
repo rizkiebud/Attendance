@@ -48,6 +48,7 @@
                 <table class="table table-hover mb-0">
                     <thead>
                         <tr>
+                            <th class="text-center" style="width:40px;">#</th>
                             <th>Karyawan</th>
                             <th>Jenis</th>
                             <th>Tanggal</th>
@@ -60,6 +61,7 @@
                     <tbody>
                         @foreach($leaves as $leave)
                         <tr>
+                            <td class="text-center text-muted">{{ $loop->iteration }}</td>
                             <td>
                                 <div class="fw-semibold">{{ $leave->employee->nama }}</div>
                                 <div class="text-muted small">{{ $leave->employee->departemen }}</div>

@@ -66,6 +66,7 @@
                 <table class="table table-hover mb-0">
                     <thead>
                         <tr>
+                            <th class="text-center" style="width:40px;">#</th>
                             <th>Karyawan</th>
                             <th class="text-center">Hadir</th>
                             <th class="text-center">Terlambat</th>
@@ -83,6 +84,7 @@
                             $persentase = $rekap['total'] > 0 ? round(($totalHadir / $rekap['total']) * 100) : 0;
                         @endphp
                         <tr>
+                            <td class="text-center text-muted">{{ $loop->iteration }}</td>
                             <td>
                                 <div class="fw-semibold">{{ $rekap['employee']->nama }}</div>
                                 <div class="text-muted small">{{ $rekap['employee']->departemen }}</div>

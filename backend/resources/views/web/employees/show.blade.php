@@ -99,6 +99,7 @@
                         <table class="table table-sm table-hover mb-0">
                             <thead>
                                 <tr>
+                                    <th class="text-center" style="width:40px;">#</th>
                                     <th>Tanggal</th>
                                     <th>Jam Masuk</th>
                                     <th>Jam Keluar</th>
@@ -109,6 +110,7 @@
                             <tbody>
                                 @foreach($employee->attendances as $att)
                                 <tr>
+                                    <td class="text-center text-muted">{{ $loop->iteration }}</td>
                                     <td>{{ $att->tanggal->format('d/m/Y') }}</td>
                                     <td>{{ $att->jam_masuk ?? '-' }}</td>
                                     <td>{{ $att->jam_keluar ?? '-' }}</td>
@@ -142,6 +144,7 @@
                         <table class="table table-sm table-hover mb-0">
                             <thead>
                                 <tr>
+                                    <th class="text-center" style="width:40px;">#</th>
                                     <th>Jenis</th>
                                     <th>Tanggal</th>
                                     <th>Alasan</th>
@@ -151,6 +154,7 @@
                             <tbody>
                                 @foreach($employee->leaveRequests as $leave)
                                 <tr>
+                                    <td class="text-center text-muted">{{ $loop->iteration }}</td>
                                     <td>{{ ucfirst($leave->jenis) }}</td>
                                     <td>
                                         {{ $leave->tanggal_mulai->format('d/m') }} -

@@ -103,6 +103,7 @@
                 <table class="table table-hover mb-0">
                     <thead>
                         <tr>
+                            <th class="text-center" style="width:40px;">#</th>
                             <th>Karyawan</th>
                             <th>Jam Masuk</th>
                             <th>Jam Keluar</th>
@@ -116,6 +117,7 @@
                     <tbody>
                         @foreach($attendances as $att)
                         <tr>
+                            <td class="text-center text-muted">{{ $loop->iteration }}</td>
                             <td>
                                 <div class="fw-semibold">{{ $att->employee->nama }}</div>
                                 <div class="text-muted small">{{ $att->employee->departemen }}</div>
