@@ -10,19 +10,6 @@ use Symfony\Component\HttpFoundation\Response;
 class CheckJabatan
 {
     /**
-     * Level akses berdasarkan jabatan & role.
-     *
-     * - admin -> full
-     * - Kepala Seksi -> manage
-     * - Staf -> view-only
-     */
-    const LEVELS = [
-        'admin'         => ['full', 'manage', 'view'],
-        'Kepala Seksi'  => ['manage', 'view'],
-        'Staf'          => ['view'],
-    ];
-
-    /**
      * Handle request. Parameter: level minimal yang dibutuhkan.
      * Contoh: ->middleware('jabatan:manage') berarti minimal manage.
      */
@@ -35,21 +22,16 @@ class CheckJabatan
             return redirect()->route('web.login')->with('error', 'Silakan login terlebih dahulu.');
         }
 
-        $userLevels = self::LEVELS['admin']; // default
+        $level = $user->accessLevel();
 
-        if ($user->isAdmin()) {
-            $userLevels = self::LEVELS['admin'];
-        } elseif ($user->employee && $user->employee->jabatan) {
-            $userLevels = self::LEVELS[$user->employee->jabatan] ?? ['view'];
-        } else {
+        if (!$level) {
             return $this->denied($request);
         }
 
         $levelRank = ['view' => 0, 'manage' => 1, 'full' => 2];
-        $userRank = max(array_map(fn($l) => $levelRank[$l] ?? -1, $userLevels));
         $needRank = $levelRank[$minLevel] ?? 0;
 
-        if ($userRank >= $needRank) {
+        if ($levelRank[$level] >= $needRank) {
             return $next($request);
         }
 

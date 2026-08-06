@@ -38,9 +38,9 @@
         @php
             $u = auth()->user();
             $isAdmin = $u->isAdmin();
-            $jabatan = $u->employee?->jabatan;
-            $userLevels = $isAdmin ? ['full','manage','view'] : (\App\Http\Middleware\CheckJabatan::LEVELS[$jabatan] ?? ['view']);
-            $canManage = in_array('manage', $userLevels);
+            $accessLevel = $u->accessLevel();
+            $canManage = in_array($accessLevel, ['manage', 'full']);
+            $canFull = $accessLevel === 'full';
         @endphp
         <nav class="sidebar-nav">
             <p class="sidebar-label">Menu Utama</p>
@@ -81,6 +81,16 @@
                 <i class="bi bi-geo-alt"></i>
                 <span>Kantor & Lokasi</span>
             </a>
+            <a href="{{ route('web.payrolls.index') }}" class="sidebar-link {{ request()->routeIs('web.payrolls.*') ? 'active' : '' }}">
+                <i class="bi bi-cash-stack"></i>
+                <span>Penggajian</span>
+            </a>
+            @if($canFull)
+            <a href="{{ route('web.roles.index') }}" class="sidebar-link {{ request()->routeIs('web.roles.*') ? 'active' : '' }}">
+                <i class="bi bi-shield-lock"></i>
+                <span>Master Role</span>
+            </a>
+            @endif
             @endif
         </nav>
 
@@ -92,7 +102,7 @@
                 <div class="sidebar-user-info">
                     <div style="color: #fff; font-size: 0.8rem; font-weight: 600; white-space: nowrap;">{{ auth()->user()->name }}</div>
                     <div style="color: #94a3b8; font-size: 0.7rem; white-space: nowrap;">
-                        {{ auth()->user()->isAdmin() ? 'Administrator' : (auth()->user()->employee?->jabatan ?? 'Karyawan') }}
+                        {{ $u->accessLevel() ? ($u->roleModel?->label ?? ($u->isAdmin() ? 'Administrator' : 'Karyawan')) : 'Karyawan' }}
                     </div>
                 </div>
             </div>

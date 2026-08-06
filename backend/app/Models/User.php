@@ -16,6 +16,7 @@ class User extends Authenticatable implements JWTSubject
         'email',
         'password',
         'role',
+        'role_id',
         'fcm_token',
     ];
 
@@ -47,8 +48,19 @@ class User extends Authenticatable implements JWTSubject
         return $this->hasOne(Employee::class);
     }
 
+    public function roleModel()
+    {
+        return $this->belongsTo(Role::class, 'role_id');
+    }
+
     public function isAdmin(): bool
     {
-        return $this->role === 'admin';
+        return $this->role === 'admin' || $this->roleModel?->name === 'admin';
+    }
+
+    public function accessLevel(): ?string
+    {
+        if ($this->isAdmin()) return 'full';
+        return $this->roleModel?->level;
     }
 }

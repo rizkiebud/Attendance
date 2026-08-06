@@ -6,6 +6,8 @@ use App\Http\Controllers\Web\DashboardController;
 use App\Http\Controllers\Web\EmployeeController;
 use App\Http\Controllers\Web\LeaveController;
 use App\Http\Controllers\Web\OfficeController;
+use App\Http\Controllers\Web\PayrollController;
+use App\Http\Controllers\Web\RoleController;
 use Illuminate\Support\Facades\Route;
 
 // Root redirect
@@ -64,5 +66,24 @@ Route::prefix('admin')->name('web.')->group(function () {
             'update' => 'offices.update',
             'destroy' => 'offices.destroy',
         ])->except(['show']);
+
+        // Penggajian
+        Route::get('payrolls', [PayrollController::class, 'index'])->name('payrolls.index');
+        Route::get('payrolls/create', [PayrollController::class, 'create'])->name('payrolls.create');
+        Route::post('payrolls', [PayrollController::class, 'store'])->name('payrolls.store');
+        Route::post('payrolls/{payroll}/paid', [PayrollController::class, 'markPaid'])->name('payrolls.paid');
+        Route::delete('payrolls/{payroll}', [PayrollController::class, 'destroy'])->name('payrolls.destroy');
+
+        // Master Role (hanya full)
+        Route::middleware('jabatan:full')->group(function () {
+            Route::resource('roles', RoleController::class)->names([
+                'index' => 'roles.index',
+                'create' => 'roles.create',
+                'store' => 'roles.store',
+                'edit' => 'roles.edit',
+                'update' => 'roles.update',
+                'destroy' => 'roles.destroy',
+            ])->except(['show']);
+        });
     });
 });

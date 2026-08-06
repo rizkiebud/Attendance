@@ -60,6 +60,17 @@
                 </select>
             </div>
             <div class="col-md-2">
+                <label class="form-label small fw-semibold">Departemen</label>
+                <select name="departemen" class="form-select">
+                    <option value="">Semua Departemen</option>
+                    @foreach($departemens as $d)
+                        <option value="{{ $d }}" {{ request('departemen') == $d ? 'selected' : '' }}>
+                            {{ $d }}
+                        </option>
+                    @endforeach
+                </select>
+            </div>
+            <div class="col-md-2">
                 <label class="form-label small fw-semibold">Status</label>
                 <select name="status" class="form-select">
                     <option value="">Semua Status</option>

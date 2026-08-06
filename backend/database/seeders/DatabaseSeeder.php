@@ -12,12 +12,15 @@ class DatabaseSeeder extends Seeder
 {
     public function run(): void
     {
+        $this->call(RoleSeeder::class);
+
         // Admin user
         $admin = User::create([
             'name' => 'Administrator',
             'email' => 'admin@kppn.go.id',
             'password' => Hash::make('password123'),
             'role' => 'admin',
+            'role_id' => \App\Models\Role::where('name', 'admin')->value('id'),
         ]);
 
         // Sample employees
@@ -30,11 +33,21 @@ class DatabaseSeeder extends Seeder
         ];
 
         foreach ($employees as $emp) {
+            // Akses web berdasarkan role master, dipetakan dari jabatan untuk data awal
+            $roleName = match ($emp['jabatan']) {
+                'Kepala Seksi' => 'supervisor',
+                'Staf' => 'staf',
+                default => 'karyawan',
+            };
+            $role = \App\Models\Role::where('name', $roleName)->first();
+
             $user = User::create([
                 'name' => $emp['name'],
                 'email' => $emp['email'],
                 'password' => Hash::make('password123'),
+                // Kolom `role` dibatasi enum ['admin','karyawan']; akses web via `role_id`.
                 'role' => 'karyawan',
+                'role_id' => $role->id,
             ]);
 
             Employee::create([

@@ -24,6 +24,10 @@ class AttendanceController extends Controller
             $query->where('employee_id', $request->employee_id);
         }
 
+        if ($request->departemen) {
+            $query->whereHas('employee', fn($q) => $q->where('departemen', $request->departemen));
+        }
+
         if ($request->status) {
             $query->where('status', $request->status);
         }
@@ -31,6 +35,8 @@ class AttendanceController extends Controller
         $attendances = $query->orderBy('jam_masuk', 'asc')->paginate(20)->withQueryString();
 
         $employees = $this->filterEmployeeQuery(Employee::where('aktif', true))->orderBy('nama')->get();
+
+        $departemens = $this->filterEmployeeQuery(Employee::query())->distinct()->pluck('departemen')->filter()->sort()->values();
 
         $dep = $this->departemenFilter();
         $stats = [
@@ -41,7 +47,7 @@ class AttendanceController extends Controller
                 - $this->filterAttendanceQuery(Attendance::whereDate('tanggal', $tanggal))->whereIn('status', ['hadir', 'terlambat', 'izin', 'sakit'])->count(),
         ];
 
-        return view('web.attendances.index', compact('attendances', 'employees', 'tanggal', 'stats'));
+        return view('web.attendances.index', compact('attendances', 'employees', 'departemens', 'tanggal', 'stats'));
     }
 
     public function show(Attendance $attendance)

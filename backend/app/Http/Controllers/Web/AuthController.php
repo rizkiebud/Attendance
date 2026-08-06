@@ -36,8 +36,8 @@ class AuthController extends Controller
 
             /** @var \App\Models\User $user */
             $user = Auth::user();
-            $hasAccess = $user->isAdmin()
-                || ($user->employee && in_array($user->employee->jabatan, ['Kepala Seksi', 'Staf']));
+            // Akses web ditentukan oleh role master, bukan data karyawan.
+            $hasAccess = $user->accessLevel() !== null;
 
             if (!$hasAccess) {
                 Auth::logout();
