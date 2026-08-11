@@ -48,6 +48,10 @@
                         <span class="small">{{ $employee->nip ?? 'Belum diisi' }}</span>
                     </div>
                     <div class="d-flex gap-2 mb-2">
+                        <i class="bi bi-person text-muted" style="width:20px;"></i>
+                        <span class="small">{{ $employee->user->username }}</span>
+                    </div>
+                    <div class="d-flex gap-2 mb-2">
                         <i class="bi bi-envelope text-muted" style="width:20px;"></i>
                         <span class="small">{{ $employee->user->email }}</span>
                     </div>
@@ -103,6 +107,7 @@
                                     <th>Tanggal</th>
                                     <th>Jam Masuk</th>
                                     <th>Jam Keluar</th>
+                                    <th>Durasi</th>
                                     <th>Status</th>
                                     <th>Jarak</th>
                                 </tr>
@@ -114,6 +119,7 @@
                                     <td>{{ $att->tanggal->format('d/m/Y') }}</td>
                                     <td>{{ $att->jam_masuk ?? '-' }}</td>
                                     <td>{{ $att->jam_keluar ?? '-' }}</td>
+                                    <td>{{ $att->durasi_kerja ?? '-' }}</td>
                                     <td>
                                         <span class="badge badge-{{ $att->status }}">
                                             {{ ucfirst(str_replace('_', ' ', $att->status)) }}

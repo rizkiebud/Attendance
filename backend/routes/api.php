@@ -44,5 +44,8 @@ Route::middleware(['auth:api'])->group(function () {
         Route::get('/', [LeaveController::class, 'index']);
         Route::post('/', [LeaveController::class, 'store']);
         Route::get('/{id}', [LeaveController::class, 'show']);
+        Route::get('/pending/list', [LeaveController::class, 'pending']);
+        Route::post('/{id}/approve', [LeaveController::class, 'approve']);
+        Route::post('/{id}/reject', [LeaveController::class, 'reject']);
     });
 });

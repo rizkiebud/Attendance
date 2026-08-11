@@ -69,4 +69,9 @@ class User extends Authenticatable implements JWTSubject
 
         return $role?->level;
     }
+
+    public function isSupervisor(): bool
+    {
+        return $this->isAdmin() || $this->roleModel?->name === 'supervisor';
+    }
 }

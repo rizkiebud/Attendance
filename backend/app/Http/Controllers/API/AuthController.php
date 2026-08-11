@@ -14,7 +14,7 @@ class AuthController extends Controller
     public function login(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'username' => 'required|string',
+            'login' => 'required|string',
             'password' => 'required|string',
         ]);
 
@@ -26,12 +26,15 @@ class AuthController extends Controller
             ], 422);
         }
 
-        $credentials = $request->only('username', 'password');
+        $login = $request->login;
+        $field = filter_var($login, FILTER_VALIDATE_EMAIL) ? 'email' : 'username';
+
+        $credentials = [$field => $login, 'password' => $request->password];
 
         if (!$token = JWTAuth::attempt($credentials)) {
             return response()->json([
                 'success' => false,
-                'message' => 'Username atau password salah',
+                'message' => 'Username/email atau password salah',
             ], 401);
         }
 
@@ -63,6 +66,7 @@ class AuthController extends Controller
                     'name' => $user->name,
                     'email' => $user->email,
                     'role' => $user->role,
+                    'can_approve_leave' => $user->isSupervisor(),
                     'employee' => $user->employee,
                 ],
             ],
@@ -95,6 +99,7 @@ class AuthController extends Controller
                 'name' => $user->name,
                 'email' => $user->email,
                 'role' => $user->role,
+                'can_approve_leave' => $user->isSupervisor(),
                 'employee' => $user->employee,
             ],
         ]);

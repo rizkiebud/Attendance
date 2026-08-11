@@ -34,6 +34,11 @@
                             <input type="text" name="nip" class="form-control" value="{{ old('nip', $employee->nip) }}">
                         </div>
                         <div class="col-md-6">
+                            <label class="form-label fw-semibold small">Username <span class="text-danger">*</span></label>
+                            <input type="text" name="username" class="form-control"
+                                value="{{ old('username', $employee->user->username) }}" minlength="3" required>
+                        </div>
+                        <div class="col-md-6">
                             <label class="form-label fw-semibold small">Posisi</label>
                             <input type="text" name="jabatan" class="form-control" value="{{ old('jabatan', $employee->jabatan) }}">
                         </div>
