@@ -28,7 +28,7 @@ class CheckJabatan
             return $this->denied($request);
         }
 
-        $levelRank = ['view' => 0, 'manage' => 1, 'full' => 2];
+        $levelRank = ['view' => 0, 'manage' => 1, 'hrd' => 1, 'full' => 2];
         $needRank = $levelRank[$minLevel] ?? 0;
 
         if ($levelRank[$level] >= $needRank) {

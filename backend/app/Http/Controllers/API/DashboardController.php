@@ -44,7 +44,7 @@ class DashboardController extends Controller
         // Riwayat 7 hari terakhir
         $recentAttendances = Attendance::with('office')
             ->where('employee_id', $employee->id)
-            ->where('tanggal', '>=', now()->subDays(7))
+            ->where('tanggal', '>=', today()->subDays(7))
             ->orderBy('tanggal', 'desc')
             ->get();
 

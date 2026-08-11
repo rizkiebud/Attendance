@@ -40,6 +40,7 @@
                             <select name="level" class="form-select" required>
                                 <option value="view" {{ old('level') === 'view' ? 'selected' : '' }}>View (lihat saja)</option>
                                 <option value="manage" {{ old('level') === 'manage' ? 'selected' : '' }}>Manage (kelola data)</option>
+                                <option value="hrd" {{ old('level') === 'hrd' ? 'selected' : '' }}>HRD (absensi, laporan, karyawan, izin, kantor & lokasi)</option>
                                 <option value="full" {{ old('level') === 'full' ? 'selected' : '' }}>Full (semua akses)</option>
                             </select>
                         </div>

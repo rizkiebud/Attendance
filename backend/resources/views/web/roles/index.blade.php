@@ -42,8 +42,18 @@
                             <td>{{ $role->label }}</td>
                             <td>
                                 @php
-                                    $badge = $role->level === 'full' ? 'danger' : ($role->level === 'manage' ? 'warning' : 'secondary');
-                                    $label = $role->level === 'full' ? 'Full' : ($role->level === 'manage' ? 'Manage' : 'View');
+                                    $badge = match($role->level) {
+                                        'full' => 'danger',
+                                        'manage' => 'warning',
+                                        'hrd' => 'info',
+                                        default => 'secondary',
+                                    };
+                                    $label = match($role->level) {
+                                        'full' => 'Full',
+                                        'manage' => 'Manage',
+                                        'hrd' => 'HRD',
+                                        default => 'View',
+                                    };
                                 @endphp
                                 <span class="badge bg-{{ $badge }}">{{ $label }}</span>
                             </td>
@@ -52,7 +62,7 @@
                                 <a href="{{ route('web.roles.edit', $role) }}" class="btn btn-sm btn-outline-primary">
                                     <i class="bi bi-pencil me-1"></i>Edit
                                 </a>
-                                @if($role->name !== 'admin')
+                                @if(!in_array(strtolower($role->name), ['admin', 'administrator']))
                                 <form action="{{ route('web.roles.destroy', $role) }}" method="POST" class="d-inline"
                                     onsubmit="return confirm('Hapus role {{ $role->name }}?')">
                                     @csrf @method('DELETE')

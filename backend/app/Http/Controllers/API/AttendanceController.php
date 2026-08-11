@@ -153,6 +153,12 @@ class AttendanceController extends Controller
         }
 
         $office = $attendance->office;
+        if (!$office) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Data kantor tidak ditemukan',
+            ], 404);
+        }
         $lat = (float) $request->latitude;
         $lng = (float) $request->longitude;
         $jarak = $office->hitungJarak($lat, $lng);

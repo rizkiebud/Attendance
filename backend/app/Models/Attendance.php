@@ -55,6 +55,10 @@ class Attendance extends Model
         if ($this->jam_masuk && $this->jam_keluar) {
             $masuk = \Carbon\Carbon::parse($this->jam_masuk);
             $keluar = \Carbon\Carbon::parse($this->jam_keluar);
+            // Shift lintas tengah malam (keluar < masuk) → tambah 1 hari
+            if ($keluar->lt($masuk)) {
+                $keluar->addDay();
+            }
             $diff = $masuk->diff($keluar);
             return $diff->format('%H:%I');
         }

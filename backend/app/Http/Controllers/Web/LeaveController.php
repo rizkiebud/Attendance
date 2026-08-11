@@ -51,7 +51,10 @@ class LeaveController extends Controller
 
         // Update status absensi pada tanggal yang diajukan
         $tanggal = $leave->tanggal_mulai->copy();
-        $defaultOfficeId = \App\Models\Office::where('aktif', true)->value('id') ?? 1;
+        $defaultOfficeId = \App\Models\Office::where('aktif', true)->value('id');
+        if (!$defaultOfficeId) {
+            return back()->with('error', 'Tidak ada kantor aktif. Tambahkan kantor terlebih dahulu.');
+        }
         while ($tanggal->lte($leave->tanggal_selesai)) {
             Attendance::updateOrCreate(
                 [

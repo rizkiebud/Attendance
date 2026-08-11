@@ -37,20 +37,22 @@
                             <select name="level" class="form-select" required>
                                 <option value="view" {{ old('level', $role->level) === 'view' ? 'selected' : '' }}>View (lihat saja)</option>
                                 <option value="manage" {{ old('level', $role->level) === 'manage' ? 'selected' : '' }}>Manage (kelola data)</option>
+                                <option value="hrd" {{ old('level', $role->level) === 'hrd' ? 'selected' : '' }}>HRD (absensi, laporan, karyawan, izin, kantor & lokasi)</option>
                                 <option value="full" {{ old('level', $role->level) === 'full' ? 'selected' : '' }}>Full (semua akses)</option>
                             </select>
                         </div>
                         <div class="col-12">
                             <label class="form-label fw-semibold small">Tetapkan User</label>
-                            <select name="users[]" class="form-select" multiple size="8">
+                            <div class="border rounded p-2" style="max-height: 260px; overflow-y: auto;" id="userList">
                                 @foreach($users as $user)
-                                    <option value="{{ $user->id }}"
-                                        {{ in_array($user->id, $role->users->pluck('id')->all()) ? 'selected' : '' }}>
-                                        {{ $user->name }} ({{ $user->email }})
-                                    </option>
+                                    <label class="d-flex align-items-center gap-2 py-1 px-2 rounded user-opt" data-jabatan="{{ $user->employee?->jabatan ?? '' }}">
+                                        <input type="checkbox" class="form-check-input m-0 user-check" name="users[]" value="{{ $user->id }}"
+                                            {{ in_array($user->id, $role->users->pluck('id')->all()) ? 'checked' : '' }}>
+                                        <span>{{ $user->name }} ({{ $user->email }})@if($user->employee?->jabatan) — {{ $user->employee->jabatan }}@endif</span>
+                                    </label>
                                 @endforeach
-                            </select>
-                            <div class="form-text">Pilih user yang akan memiliki role ini. Kosongkan untuk tidak ada user.</div>
+                            </div>
+                            <div class="form-text">Centang untuk pilih. Bisa pilih lebih dari 1 user. Kosongkan untuk tidak ada user.</div>
                         </div>
                     </div>
 
@@ -65,4 +67,5 @@
         </div>
     </div>
 </div>
+
 @endsection

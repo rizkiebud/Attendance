@@ -62,22 +62,26 @@ Route::prefix('admin')->name('web.')->group(function () {
             Route::post('/{leave}/reject', [LeaveController::class, 'reject'])->name('reject');
         });
 
-        // Kantor / Lokasi
-        Route::resource('offices', OfficeController::class)->names([
-            'index' => 'offices.index',
-            'create' => 'offices.create',
-            'store' => 'offices.store',
-            'edit' => 'offices.edit',
-            'update' => 'offices.update',
-            'destroy' => 'offices.destroy',
-        ])->except(['show']);
+        // Kantor / Lokasi — admin (full) atau HRD
+        Route::middleware('office-access')->group(function () {
+            Route::resource('offices', OfficeController::class)->names([
+                'index' => 'offices.index',
+                'create' => 'offices.create',
+                'store' => 'offices.store',
+                'edit' => 'offices.edit',
+                'update' => 'offices.update',
+                'destroy' => 'offices.destroy',
+            ])->except(['show']);
+        });
 
-        // Penggajian
-        Route::get('payrolls', [PayrollController::class, 'index'])->name('payrolls.index');
-        Route::get('payrolls/create', [PayrollController::class, 'create'])->name('payrolls.create');
-        Route::post('payrolls', [PayrollController::class, 'store'])->name('payrolls.store');
-        Route::post('payrolls/{payroll}/paid', [PayrollController::class, 'markPaid'])->name('payrolls.paid');
-        Route::delete('payrolls/{payroll}', [PayrollController::class, 'destroy'])->name('payrolls.destroy');
+        // Penggajian — khusus administrator (full)
+        Route::middleware('jabatan:full')->group(function () {
+            Route::get('payrolls', [PayrollController::class, 'index'])->name('payrolls.index');
+            Route::get('payrolls/create', [PayrollController::class, 'create'])->name('payrolls.create');
+            Route::post('payrolls', [PayrollController::class, 'store'])->name('payrolls.store');
+            Route::post('payrolls/{payroll}/paid', [PayrollController::class, 'markPaid'])->name('payrolls.paid');
+            Route::delete('payrolls/{payroll}', [PayrollController::class, 'destroy'])->name('payrolls.destroy');
+        });
 
         // Master Role (hanya administrator)
         Route::middleware('admin')->group(function () {

@@ -15,6 +15,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'admin' => \App\Http\Middleware\AdminMiddleware::class,
             'jabatan' => \App\Http\Middleware\CheckJabatan::class,
+            'office-access' => \App\Http\Middleware\OfficeAccess::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

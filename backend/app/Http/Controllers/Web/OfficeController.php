@@ -71,7 +71,7 @@ class OfficeController extends Controller
         $office->update($request->only([
             'nama', 'alamat', 'latitude', 'longitude', 'radius',
             'jam_masuk', 'jam_keluar', 'toleransi_terlambat',
-        ]) + ['aktif' => $request->boolean('aktif', true)]);
+        ]) + ['aktif' => $request->has('aktif') ? $request->boolean('aktif') : true]);
 
         return redirect()->route('web.offices.index')
             ->with('success', 'Kantor berhasil diperbarui');

@@ -41,7 +41,7 @@ class AuthController extends Controller
         $user = auth()->user();
 
         // Cek status karyawan (non-admin harus aktif)
-        if ($user->role !== 'admin' && $user->employee && !$user->employee->aktif) {
+        if ($user->role !== 'admin' && !$user->employee?->aktif) {
             JWTAuth::invalidate($token);
             return response()->json([
                 'success' => false,

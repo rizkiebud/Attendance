@@ -27,7 +27,7 @@ class RoleController extends Controller
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255|unique:roles,name',
             'label' => 'required|string|max:255',
-            'level' => 'required|in:view,manage,full',
+            'level' => 'required|in:view,manage,full,hrd',
         ]);
 
         if ($validator->fails()) {
@@ -42,8 +42,29 @@ class RoleController extends Controller
 
     public function edit(Role $role)
     {
-        $users = User::orderBy('name')->get();
+        $users = $this->usersForLevel($role->level);
         return view('web.roles.edit', compact('role', 'users'));
+    }
+
+    /**
+     * User yang layak diberi role pada level tertentu.
+     * manage → posisi supervisor; full → posisi manager.
+     */
+    protected function usersForLevel(string $level): \Illuminate\Support\Collection
+    {
+        $keywords = match ($level) {
+            'manage' => ['supervisor', 'kepala seksi', 'kepala'],
+            'full'   => ['manager', 'manajer'],
+            'hrd'    => [],
+            default  => [],
+        };
+
+        return User::with('employee')->orderBy('name')->get()
+            ->filter(function (User $user) use ($keywords) {
+                if (empty($keywords)) return true;
+                $jabatan = strtolower((string) $user->employee?->jabatan);
+                return collect($keywords)->some(fn ($k) => str_contains($jabatan, $k));
+            })->values();
     }
 
     public function update(Request $request, Role $role)
@@ -51,7 +72,7 @@ class RoleController extends Controller
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255|unique:roles,name,' . $role->id,
             'label' => 'required|string|max:255',
-            'level' => 'required|in:view,manage,full',
+            'level' => 'required|in:view,manage,full,hrd',
             'users' => 'nullable|array',
             'users.*' => 'exists:users,id',
         ]);
@@ -76,7 +97,7 @@ class RoleController extends Controller
 
     public function destroy(Role $role)
     {
-        if ($role->name === 'admin') {
+        if (in_array(strtolower($role->name), ['admin', 'administrator'])) {
             return back()->with('error', 'Role admin tidak dapat dihapus.');
         }
 

@@ -39,8 +39,9 @@
             $u = auth()->user();
             $isAdmin = $u->isAdmin();
             $accessLevel = $u->accessLevel();
-            $canManage = in_array($accessLevel, ['manage', 'full']);
+            $canManage = in_array($accessLevel, ['manage', 'hrd', 'full']);
             $canFull = $accessLevel === 'full';
+            $canOffices = $canFull || $u->isHrd();
         @endphp
         <nav class="sidebar-nav">
             <p class="sidebar-label">Menu Utama</p>
@@ -77,10 +78,14 @@
                     <span class="badge bg-danger ms-auto">{{ $pendingLeaves }}</span>
                 @endif
             </a>
+            @if($canOffices)
+            <p class="sidebar-label mt-2">Konfigurasi</p>
             <a href="{{ route('web.offices.index') }}" class="sidebar-link {{ request()->routeIs('web.offices.*') ? 'active' : '' }}">
                 <i class="bi bi-geo-alt"></i>
                 <span>Kantor & Lokasi</span>
             </a>
+            @endif
+            @if($canFull)
             <a href="{{ route('web.payrolls.index') }}" class="sidebar-link {{ request()->routeIs('web.payrolls.*') ? 'active' : '' }}">
                 <i class="bi bi-cash-stack"></i>
                 <span>Penggajian</span>
@@ -90,6 +95,7 @@
                 <i class="bi bi-shield-lock"></i>
                 <span>Master Role</span>
             </a>
+            @endif
             @endif
             @endif
         </nav>

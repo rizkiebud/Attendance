@@ -14,7 +14,7 @@ trait FilterByDepartemen
     {
         /** @var \App\Models\User|null $user */
         $user = Auth::user();
-        if ($user && $user->isAdmin()) return null;
+        if ($user && ($user->isAdmin() || $user->isHrd() || $user->accessLevel() === 'full')) return null;
         return $user->employee?->departemen;
     }
 

@@ -56,7 +56,7 @@ class User extends Authenticatable implements JWTSubject
 
     public function isAdmin(): bool
     {
-        return $this->role === 'admin' || $this->roleModel?->name === 'admin';
+        return $this->role === 'admin' || strtolower((string) $this->roleModel?->name) === 'admin';
     }
 
     public function accessLevel(): ?string
@@ -65,13 +65,28 @@ class User extends Authenticatable implements JWTSubject
 
         $role = $this->roleModel;
         // Role karyawan tidak punya akses ke web dashboard
-        if ($role && $role->name === 'karyawan') return null;
+        if ($role && strtolower($role->name) === 'karyawan') return null;
+        // HRD = level khusus (manage + kantor & lokasi, tanpa penggajian)
+        if ($role && strtolower($role->name) === 'hrd') return 'hrd';
 
         return $role?->level;
     }
 
     public function isSupervisor(): bool
     {
-        return $this->isAdmin() || $this->roleModel?->name === 'supervisor';
+        return $this->isAdmin() || strtolower((string) $this->roleModel?->name) === 'supervisor';
+    }
+
+    public function isHrd(): bool
+    {
+        return strtolower((string) $this->roleModel?->name) === 'hrd';
+    }
+
+    /**
+     * Akses ke menu Kantor & Lokasi: admin (full) atau role HRD.
+     */
+    public function canManageOffices(): bool
+    {
+        return $this->isAdmin() || $this->isHrd() || $this->accessLevel() === 'full';
     }
 }

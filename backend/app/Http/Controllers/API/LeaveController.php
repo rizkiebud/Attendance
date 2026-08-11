@@ -14,6 +14,12 @@ class LeaveController extends Controller
     public function index(Request $request)
     {
         $employee = auth()->user()->employee;
+        if (!$employee) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Data karyawan tidak ditemukan',
+            ], 404);
+        }
 
         $leaves = LeaveRequest::where('employee_id', $employee->id)
             ->orderBy('created_at', 'desc')
@@ -75,6 +81,12 @@ class LeaveController extends Controller
     public function show($id)
     {
         $employee = auth()->user()->employee;
+        if (!$employee) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Data karyawan tidak ditemukan',
+            ], 404);
+        }
 
         $leave = LeaveRequest::where('employee_id', $employee->id)
             ->findOrFail($id);
