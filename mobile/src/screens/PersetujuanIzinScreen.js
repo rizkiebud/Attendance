@@ -23,7 +23,7 @@ const JENIS_COLORS = {
   cuti: {bg: '#dcfce7', text: '#16a34a', label: 'Cuti'},
 };
 
-const PersetujuanIzinScreen = () => {
+const PersetujuanIzinScreen = ({navigation}) => {
   const [leaves, setLeaves] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [approvingId, setApprovingId] = useState(null);
@@ -36,7 +36,8 @@ const PersetujuanIzinScreen = () => {
   const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
-    fetchPending(1, true);
+    const focusUnsub = navigation.addListener('focus', () => fetchPending(1, true));
+    return focusUnsub;
   }, []);
 
   const fetchPending = async (pageNum = 1, reset = false) => {
@@ -75,6 +76,8 @@ const PersetujuanIzinScreen = () => {
             try {
               await leaveService.approve(item.id);
               setLeaves(prev => prev.filter(i => i.id !== item.id));
+              setPage(1);
+              fetchPending(1, true);
               Alert.alert('Berhasil', 'Permohonan telah disetujui');
             } catch (err) {
               Alert.alert(
@@ -103,8 +106,9 @@ const PersetujuanIzinScreen = () => {
     setSubmitting(true);
     try {
       await leaveService.reject(rejectTarget.id, catatan.trim());
-      setLeaves(prev => prev.filter(i => i.id !== rejectTarget.id));
       setRejectTarget(null);
+      setPage(1);
+      fetchPending(1, true);
       Alert.alert('Berhasil', 'Permohonan telah ditolak');
     } catch (err) {
       Alert.alert('Gagal', err.response?.data?.message || 'Terjadi kesalahan');

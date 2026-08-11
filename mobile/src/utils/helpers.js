@@ -41,7 +41,22 @@ export function formatTanggal(dateStr) {
     'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember',
   ];
   const [y, m, d] = dateStr.split('-');
-  return `${parseInt(d)} ${months[parseInt(m) - 1]} ${y}`;
+  const mi = parseInt(m, 10) - 1;
+  if (!y || !m || !d || isNaN(mi) || mi < 0 || mi > 11) return '-';
+  return `${parseInt(d)} ${months[mi]} ${y}`;
+}
+
+/**
+ * Format durasi HH:MM → "8 jam 30 mnt"
+ */
+export function formatDurasi(durasi) {
+  if (!durasi) return null;
+  const [h, m] = String(durasi).split(':');
+  const hh = parseInt(h, 10);
+  const mm = parseInt(m, 10);
+  if (isNaN(hh) || isNaN(mm)) return String(durasi);
+  if (mm === 0) return `${hh} jam`;
+  return `${hh} jam ${mm} mnt`;
 }
 
 /**
@@ -79,4 +94,14 @@ export function getNamaBulan(bulan) {
     'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember',
   ];
   return months[bulan - 1];
+}
+
+/**
+ * Tanggal lokal YYYY-MM-DD (hindari shift timezone UTC)
+ */
+export function localDateStr(date = new Date()) {
+  const y = date.getFullYear();
+  const m = String(date.getMonth() + 1).padStart(2, '0');
+  const d = String(date.getDate()).padStart(2, '0');
+  return `${y}-${m}-${d}`;
 }

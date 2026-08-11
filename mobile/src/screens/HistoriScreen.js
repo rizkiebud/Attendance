@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState, useCallback} from 'react';
 import {
   View,
   Text,
@@ -10,9 +10,10 @@ import {
 } from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import Icon from 'react-native-vector-icons/Ionicons';
+import {useFocusEffect} from '@react-navigation/native';
 import {attendanceService} from '../services/api';
 import {COLORS, STATUS_COLORS} from '../utils/colors';
-import {formatTanggal, formatTime, getNamaBulan} from '../utils/helpers';
+import {formatTanggal, formatTime, getNamaBulan, formatDurasi} from '../utils/helpers';
 
 const HistoriScreen = ({navigation}) => {
   const [attendances, setAttendances] = useState([]);
@@ -21,9 +22,11 @@ const HistoriScreen = ({navigation}) => {
   const [bulan, setBulan] = useState(new Date().getMonth() + 1);
   const [tahun, setTahun] = useState(new Date().getFullYear());
 
-  useEffect(() => {
-    fetchHistory();
-  }, [bulan, tahun]);
+  useFocusEffect(
+    useCallback(() => {
+      fetchHistory();
+    }, [bulan, tahun]),
+  );
 
   const fetchHistory = async () => {
     setIsLoading(true);
@@ -83,7 +86,7 @@ const HistoriScreen = ({navigation}) => {
           <Icon name="log-out-outline" size={12} color={COLORS.danger} />{' '}
           {item.jam_keluar ? formatTime(item.jam_keluar) : '--:--'}
           {item.durasi_kerja ? (
-            <Text style={{color: COLORS.primary}}>{'  '}<Icon name="hourglass-outline" size={11} color={COLORS.primary} /> {item.durasi_kerja} jam</Text>
+            <Text style={{color: COLORS.primary}}>{'  '}<Icon name="hourglass-outline" size={11} color={COLORS.primary} /> {formatDurasi(item.durasi_kerja)}</Text>
           ) : null}
         </Text>
         {item.jarak_masuk && (

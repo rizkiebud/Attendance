@@ -1,6 +1,7 @@
 import React, {createContext, useContext, useState, useEffect} from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {authService} from '../services/api';
+import {on} from '../utils/events';
 
 const AuthContext = createContext(null);
 
@@ -12,6 +13,12 @@ export const AuthProvider = ({children}) => {
 
   useEffect(() => {
     checkAuthState();
+    const off401 = on('auth:unauthorized', () => {
+      setUser(null);
+      setEmployee(null);
+      setIsAuthenticated(false);
+    });
+    return off401;
   }, []);
 
   const checkAuthState = async () => {

@@ -18,7 +18,7 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import {useFocusEffect} from '@react-navigation/native';
 import {attendanceService} from '../services/api';
 import {COLORS, STATUS_COLORS} from '../utils/colors';
-import {hitungJarak, formatJarak, formatTime} from '../utils/helpers';
+import {hitungJarak, formatJarak, formatTime, formatDurasi} from '../utils/helpers';
 
 const AbsensiScreen = () => {
   const [offices, setOffices] = useState([]);
@@ -276,7 +276,7 @@ const AbsensiScreen = () => {
                 <View style={styles.timeInfoItem}>
                   <Text style={styles.timeInfoLabel}>Durasi</Text>
                   <Text style={[styles.timeInfoValue, {color: COLORS.primary}]}>
-                    {todayAttendance.durasi_kerja} jam
+                    {formatDurasi(todayAttendance.durasi_kerja)}
                   </Text>
                 </View>
               )}
@@ -382,7 +382,7 @@ const AbsensiScreen = () => {
         </View>
 
         {/* Tombol Absensi */}
-        {(!todayAttendance?.jam_masuk) && (
+        {(!todayAttendance?.jam_masuk && !['izin', 'sakit'].includes(todayAttendance?.status)) && (
           <TouchableOpacity
             style={[
               styles.absenButton,

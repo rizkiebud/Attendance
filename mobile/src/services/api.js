@@ -1,5 +1,6 @@
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import {emit} from '../utils/events';
 
 // Ganti dengan IP server Laravel Anda
 // export const BASE_URL = 'http://10.0.2.2:8000'; // Android emulator
@@ -31,8 +32,10 @@ api.interceptors.request.use(
 api.interceptors.response.use(
   response => response,
   async error => {
-    if (error.response?.status === 401) {
+    if (error.response?.status === 401 && !error.config?._retried) {
+      error.config._retried = true;
       await AsyncStorage.multiRemove(['auth_token', 'user_data']);
+      emit('auth:unauthorized');
     }
     return Promise.reject(error);
   },

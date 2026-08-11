@@ -8,7 +8,7 @@ import {
 import {SafeAreaView} from 'react-native-safe-area-context';
 import Icon from 'react-native-vector-icons/Ionicons';
 import {COLORS, STATUS_COLORS} from '../utils/colors';
-import {formatTanggal, formatTime} from '../utils/helpers';
+import {formatTanggal, formatTime, formatDurasi} from '../utils/helpers';
 
 const DetailAbsensiScreen = ({route}) => {
   const {attendance} = route.params;
@@ -80,7 +80,7 @@ const DetailAbsensiScreen = ({route}) => {
               <InfoRow icon="location-outline" label="Jarak dari Kantor"
                 value={attendance.jarak_keluar ? Math.round(attendance.jarak_keluar) + ' meter' : '-'} />
               <InfoRow icon="hourglass-outline" label="Durasi Kerja"
-                value={attendance.durasi_kerja ? attendance.durasi_kerja + ' jam' : '-'} />
+                value={attendance.durasi_kerja ? formatDurasi(attendance.durasi_kerja) : '-'} />
             </>
           ) : (
             <Text style={styles.noData}>Belum absen keluar</Text>

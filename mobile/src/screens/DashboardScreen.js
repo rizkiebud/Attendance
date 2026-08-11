@@ -15,7 +15,7 @@ import {useFocusEffect} from '@react-navigation/native';
 import {useAuth} from '../context/AuthContext';
 import {dashboardService, BASE_URL} from '../services/api';
 import {COLORS, STATUS_COLORS} from '../utils/colors';
-import {getGreeting, getNamaHari, formatTanggal, formatTime} from '../utils/helpers';
+import {getGreeting, getNamaHari, formatTanggal, formatTime, localDateStr} from '../utils/helpers';
 
 const DashboardScreen = ({navigation}) => {
   const {employee} = useAuth();
@@ -63,7 +63,7 @@ const DashboardScreen = ({navigation}) => {
           <Text style={styles.greeting}>{getGreeting()},</Text>
           <Text style={styles.userName}>{employee?.nama || 'Karyawan'}</Text>
           <Text style={styles.dateText}>
-            {data?.current_date ? data.current_date : `${getNamaHari()}, ${formatTanggal(new Date().toISOString().split('T')[0])}`}
+            {getNamaHari()}, {formatTanggal(localDateStr())}
           </Text>
         </View>
         <View style={styles.avatarBox}>
