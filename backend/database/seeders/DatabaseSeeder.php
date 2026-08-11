@@ -18,6 +18,7 @@ class DatabaseSeeder extends Seeder
         $admin = User::create([
             'name' => 'Administrator',
             'email' => 'admin@kppn.go.id',
+            'username' => 'admin',
             'password' => Hash::make('password123'),
             'role' => 'admin',
             'role_id' => \App\Models\Role::where('name', 'admin')->value('id'),
@@ -44,6 +45,7 @@ class DatabaseSeeder extends Seeder
             $user = User::create([
                 'name' => $emp['name'],
                 'email' => $emp['email'],
+                'username' => strtolower(explode('@', $emp['email'])[0]),
                 'password' => Hash::make('password123'),
                 // Kolom `role` dibatasi enum ['admin','karyawan']; akses web via `role_id`.
                 'role' => 'karyawan',

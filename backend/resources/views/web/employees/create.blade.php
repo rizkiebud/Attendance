@@ -30,8 +30,12 @@
                             <input type="text" name="nama" class="form-control" value="{{ old('nama') }}" required>
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label fw-semibold small">NIP</label>
-                            <input type="text" name="nip" class="form-control" value="{{ old('nip') }}" placeholder="Nomor Induk Pegawai">
+                            <label class="form-label fw-semibold small">No. ID</label>
+                            <input type="text" name="nip" class="form-control" value="{{ old('nip') }}" placeholder="Nomor ID">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold small">Username <span class="text-danger">*</span></label>
+                            <input type="text" name="username" class="form-control" value="{{ old('username') }}" required placeholder="Username login absen">
                         </div>
                         <div class="col-md-6">
                             <label class="form-label fw-semibold small">Email <span class="text-danger">*</span></label>
@@ -42,7 +46,7 @@
                             <input type="password" name="password" class="form-control" required placeholder="Min. 6 karakter">
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label fw-semibold small">Jabatan</label>
+                            <label class="form-label fw-semibold small">Posisi</label>
                             <input type="text" name="jabatan" class="form-control" value="{{ old('jabatan') }}">
                         </div>
                         <div class="col-md-6">

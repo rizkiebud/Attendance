@@ -18,7 +18,7 @@
     <div class="card-body py-3">
         <form method="GET" class="row g-3">
             <div class="col-md-5">
-                <input type="text" name="search" class="form-control" placeholder="Cari nama, NIP, jabatan..." value="{{ request('search') }}">
+                <input type="text" name="search" class="form-control" placeholder="Cari nama, No. ID, posisi..." value="{{ request('search') }}">
             </div>
             <div class="col-md-3">
                 <select name="departemen" class="form-select">
@@ -59,8 +59,8 @@
                         <tr>
                             <th class="text-center" style="width:40px;">#</th>
                             <th>Karyawan</th>
-                            <th>NIP</th>
-                            <th>Jabatan</th>
+                            <th>No ID</th>
+                            <th>Posisi</th>
                             <th>Departemen</th>
                             <th>Status</th>
                             <th class="text-end">Aksi</th>

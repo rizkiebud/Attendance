@@ -96,8 +96,11 @@ class AttendanceController extends Controller
             9 => 'September', 10 => 'Oktober', 11 => 'November', 12 => 'Desember',
         ];
 
+        $tanggalAwal = Carbon::create($tahun, $bulan, 1);
+        $tanggalAkhir = Carbon::create($tahun, $bulan, 1)->endOfMonth();
+
         return view('web.attendances.laporan', compact(
-            'attendances', 'rekapKaryawan', 'employees', 'bulan', 'tahun', 'months'
+            'attendances', 'rekapKaryawan', 'employees', 'bulan', 'tahun', 'months', 'tanggalAwal', 'tanggalAkhir'
         ));
     }
 

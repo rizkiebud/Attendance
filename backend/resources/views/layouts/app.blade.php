@@ -85,7 +85,7 @@
                 <i class="bi bi-cash-stack"></i>
                 <span>Penggajian</span>
             </a>
-            @if($canFull)
+            @if($isAdmin)
             <a href="{{ route('web.roles.index') }}" class="sidebar-link {{ request()->routeIs('web.roles.*') ? 'active' : '' }}">
                 <i class="bi bi-shield-lock"></i>
                 <span>Master Role</span>
@@ -93,26 +93,6 @@
             @endif
             @endif
         </nav>
-
-        <div class="sidebar-bottom" style="position: absolute; bottom: 0; width: 100%; border-top: 1px solid rgba(255,255,255,0.1); padding: 1rem 1.25rem;">
-            <div class="d-flex align-items-center gap-2 mb-2">
-                <div style="width: 36px; height: 36px; border-radius: 50%; background: #334155; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
-                    <i class="bi bi-person-fill text-white"></i>
-                </div>
-                <div class="sidebar-user-info">
-                    <div style="color: #fff; font-size: 0.8rem; font-weight: 600; white-space: nowrap;">{{ auth()->user()->name }}</div>
-                    <div style="color: #94a3b8; font-size: 0.7rem; white-space: nowrap;">
-                        {{ $u->accessLevel() ? ($u->roleModel?->label ?? ($u->isAdmin() ? 'Administrator' : 'Karyawan')) : 'Karyawan' }}
-                    </div>
-                </div>
-            </div>
-            <form action="{{ route('web.logout') }}" method="POST">
-                @csrf
-                <button type="submit" class="btn btn-sm btn-outline-danger w-100">
-                    <i class="bi bi-box-arrow-right me-1"></i> <span class="sidebar-logout-text">Logout</span>
-                </button>
-            </form>
-        </div>
     </aside>
 
     <!-- Main content -->
@@ -128,11 +108,35 @@
                 </button>
                 <h1 class="topbar-title">@yield('page-title', 'Dashboard')</h1>
             </div>
-            <div class="d-flex align-items-center gap-2">
-                <span class="text-muted small">
+            <div class="d-flex align-items-center gap-3">
+                <span class="text-muted small d-none d-md-inline">
                     <i class="bi bi-calendar3 me-1"></i>
                     {{ now()->locale('id')->isoFormat('dddd, D MMMM Y') }}
                 </span>
+                <div class="dropdown">
+                    <button class="btn btn-light btn-sm d-flex align-items-center gap-2 shadow-sm px-2" data-bs-toggle="dropdown" aria-expanded="false" style="border-radius: 50rem;">
+                        <div style="width: 30px; height: 30px; border-radius: 50%; background: #334155; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                            <i class="bi bi-person-fill text-white" style="font-size: 0.9rem;"></i>
+                        </div>
+                        <div class="text-start lh-1">
+                            <div style="font-size: 0.75rem; font-weight: 600; color: #1e293b;">{{ auth()->user()->name }}</div>
+                            <div style="font-size: 0.65rem; color: #64748b;">
+                                {{ $u->accessLevel() ? ($u->roleModel?->label ?? ($u->isAdmin() ? 'Administrator' : 'Karyawan')) : 'Karyawan' }}
+                            </div>
+                        </div>
+                        <i class="bi bi-chevron-down" style="font-size: 0.7rem; color: #64748b;"></i>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end shadow">
+                        <li>
+                            <form action="{{ route('web.logout') }}" method="POST">
+                                @csrf
+                                <button type="submit" class="dropdown-item text-danger">
+                                    <i class="bi bi-box-arrow-right me-1"></i> Logout
+                                </button>
+                            </form>
+                        </li>
+                    </ul>
+                </div>
             </div>
         </div>
 

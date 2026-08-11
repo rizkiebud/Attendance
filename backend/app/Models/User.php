@@ -14,6 +14,7 @@ class User extends Authenticatable implements JWTSubject
     protected $fillable = [
         'name',
         'email',
+        'username',
         'password',
         'role',
         'role_id',
@@ -61,6 +62,11 @@ class User extends Authenticatable implements JWTSubject
     public function accessLevel(): ?string
     {
         if ($this->isAdmin()) return 'full';
-        return $this->roleModel?->level;
+
+        $role = $this->roleModel;
+        // Role karyawan tidak punya akses ke web dashboard
+        if ($role && $role->name === 'karyawan') return null;
+
+        return $role?->level;
     }
 }

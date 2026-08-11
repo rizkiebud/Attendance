@@ -44,11 +44,15 @@
 <div class="card table-card mb-4">
     <div class="card-body py-3">
         <form method="GET" class="row g-2 align-items-end">
-            <div class="col-md-3">
-                <label class="form-label small fw-semibold">Tanggal</label>
-                <input type="date" name="tanggal" class="form-control" value="{{ $tanggal->format('Y-m-d') }}">
+            <div class="col-md-2">
+                <label class="form-label small fw-semibold">Tanggal Awal</label>
+                <input type="date" name="tanggal_awal" class="form-control" value="{{ request('tanggal_awal') ?? $tanggal->format('Y-m-d') }}">
             </div>
-            <div class="col-md-3">
+            <div class="col-md-2">
+                <label class="form-label small fw-semibold">Tanggal Akhir</label>
+                <input type="date" name="tanggal_akhir" class="form-control" value="{{ request('tanggal_akhir') ?? $tanggal->format('Y-m-d') }}">
+            </div>
+            <div class="col-md-2">
                 <label class="form-label small fw-semibold">Karyawan</label>
                 <select name="employee_id" class="form-select">
                     <option value="">Semua Karyawan</option>
@@ -81,12 +85,12 @@
                     @endforeach
                 </select>
             </div>
-            <div class="col-md-2">
+            <div class="col-md-1">
                 <button type="submit" class="btn btn-outline-primary w-100">
                     <i class="bi bi-search me-1"></i>Filter
                 </button>
             </div>
-            <div class="col-md-2">
+            <div class="col-md-1">
                 <a href="{{ route('web.attendances.laporan') }}" class="btn btn-outline-success w-100">
                     <i class="bi bi-file-earmark-bar-graph me-1"></i>Laporan
                 </a>

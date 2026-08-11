@@ -13,7 +13,7 @@
                 <span class="badge bg-primary">{{ $employee->departemen ?? '-' }}</span>
                 <hr>
                 <div class="small text-muted">
-                    <div class="d-flex gap-2 mb-1"><i class="bi bi-person-badge"></i>{{ $employee->nip ?? '-' }}</div>
+                    <div class="d-flex gap-2 mb-1"><i class="bi bi-person-badge"></i>No. ID: {{ $employee->nip ?? '-' }}</div>
                     <div class="d-flex gap-2 mb-1"><i class="bi bi-calendar3"></i>Periode {{ \Carbon\Carbon::parse($periode . '-01')->translatedFormat('F Y') }}</div>
                 </div>
             </div>

@@ -24,11 +24,11 @@
                             <td class="fw-semibold">{{ $attendance->employee->nama }}</td>
                         </tr>
                         <tr>
-                            <td class="text-muted small">NIP</td>
+                            <td class="text-muted small">No. ID</td>
                             <td>{{ $attendance->employee->nip ?? '-' }}</td>
                         </tr>
                         <tr>
-                            <td class="text-muted small">Jabatan</td>
+                            <td class="text-muted small">Posisi</td>
                             <td>{{ $attendance->employee->jabatan ?? '-' }}</td>
                         </tr>
                         <tr>

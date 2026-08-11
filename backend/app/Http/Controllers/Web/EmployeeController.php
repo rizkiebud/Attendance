@@ -54,6 +54,7 @@ class EmployeeController extends Controller
         $validator = Validator::make($request->all(), [
             'nip' => 'nullable|string|unique:employees,nip',
             'nama' => 'required|string|max:255',
+            'username' => 'required|string|min:3|unique:users,username',
             'email' => 'required|email|unique:users,email',
             'password' => 'required|string|min:6',
             'jabatan' => 'nullable|string|max:255',
@@ -71,6 +72,7 @@ class EmployeeController extends Controller
             $user = User::create([
                 'name' => $request->nama,
                 'email' => $request->email,
+                'username' => $request->username,
                 'password' => $request->password,
                 'role' => 'karyawan',
             ]);
@@ -128,6 +130,7 @@ class EmployeeController extends Controller
         $validator = Validator::make($request->all(), [
             'nip' => 'nullable|string|unique:employees,nip,' . $employee->id,
             'nama' => 'required|string|max:255',
+            'username' => 'required|string|min:3|unique:users,username,' . $employee->user_id,
             'jabatan' => 'nullable|string|max:255',
             'departemen' => 'nullable|string|max:255',
             'telepon' => 'nullable|string|max:20',
@@ -159,7 +162,7 @@ class EmployeeController extends Controller
             'aktif' => $request->boolean('aktif', true),
         ]);
 
-        $employee->user->update(['name' => $request->nama]);
+        $employee->user->update(['name' => $request->nama, 'username' => $request->username]);
 
         return redirect()->route('web.employees.show', $employee)
             ->with('success', 'Data karyawan berhasil diperbarui');

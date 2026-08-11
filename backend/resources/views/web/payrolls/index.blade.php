@@ -31,8 +31,8 @@
                         <tr>
                             <th class="text-center" style="width:40px;">#</th>
                             <th>Karyawan</th>
-                            <th>NIP</th>
-                            <th>Jabatan</th>
+                            <th>No. ID</th>
+                            <th>Posisi</th>
                             <th class="text-end">Gaji Pokok</th>
                             <th class="text-end">Tunjangan</th>
                             <th class="text-end">Uang Makan</th>

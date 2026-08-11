@@ -15,6 +15,11 @@ Route::get('/', function () {
     return redirect()->route('web.login');
 });
 
+// Alias buat default auth middleware (redirect ke web.login)
+Route::get('/login', function () {
+    return redirect()->route('web.login');
+})->name('login');
+
 // Auth routes
 Route::prefix('admin')->name('web.')->group(function () {
     Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
@@ -74,8 +79,8 @@ Route::prefix('admin')->name('web.')->group(function () {
         Route::post('payrolls/{payroll}/paid', [PayrollController::class, 'markPaid'])->name('payrolls.paid');
         Route::delete('payrolls/{payroll}', [PayrollController::class, 'destroy'])->name('payrolls.destroy');
 
-        // Master Role (hanya full)
-        Route::middleware('jabatan:full')->group(function () {
+        // Master Role (hanya administrator)
+        Route::middleware('admin')->group(function () {
             Route::resource('roles', RoleController::class)->names([
                 'index' => 'roles.index',
                 'create' => 'roles.create',

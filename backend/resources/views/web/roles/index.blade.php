@@ -6,7 +6,7 @@
 @section('content')
 <div class="d-flex justify-content-between align-items-center mb-4">
     <div>
-        <p class="text-muted mb-0">Kelola role untuk akses web (tidak terikat ke data karyawan)</p>
+        {{-- <p class="text-muted mb-0">Kelola role untuk akses web (tidak terikat ke data karyawan)</p> --}}
     </div>
     <a href="{{ route('web.roles.create') }}" class="btn btn-primary">
         <i class="bi bi-plus-lg me-1"></i>Tambah Role
@@ -26,6 +26,7 @@
                 <table class="table table-hover mb-0">
                     <thead>
                         <tr>
+                            <th>No</th>
                             <th>Role</th>
                             <th>Label</th>
                             <th>Level Akses</th>
@@ -36,6 +37,7 @@
                     <tbody>
                         @foreach($roles as $role)
                         <tr>
+                            <td class="text-muted">{{ $loop->iteration }}</td>
                             <td class="fw-semibold">{{ $role->name }}</td>
                             <td>{{ $role->label }}</td>
                             <td>

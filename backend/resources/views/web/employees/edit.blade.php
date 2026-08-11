@@ -30,11 +30,11 @@
                             <input type="text" name="nama" class="form-control" value="{{ old('nama', $employee->nama) }}" required>
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label fw-semibold small">NIP</label>
+                            <label class="form-label fw-semibold small">No. ID</label>
                             <input type="text" name="nip" class="form-control" value="{{ old('nip', $employee->nip) }}">
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label fw-semibold small">Jabatan</label>
+                            <label class="form-label fw-semibold small">Posisi</label>
                             <input type="text" name="jabatan" class="form-control" value="{{ old('jabatan', $employee->jabatan) }}">
                         </div>
                         <div class="col-md-6">

@@ -51,9 +51,14 @@
 
 <div class="card table-card">
     <div class="card-header bg-white border-bottom py-3">
-        <h6 class="mb-0 fw-semibold">
-            Rekap Kehadiran - {{ $months[$bulan] }} {{ $tahun }}
-        </h6>
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+            <h6 class="mb-0 fw-semibold">
+                Rekap Kehadiran - {{ $months[$bulan] }} {{ $tahun }}
+            </h6>
+            <span class="text-muted small">
+                Periode: <strong>{{ $tanggalAwal->format('d M Y') }}</strong> s/d <strong>{{ $tanggalAkhir->format('d M Y') }}</strong>
+            </span>
+        </div>
     </div>
     <div class="card-body p-0">
         @if($rekapKaryawan->isEmpty())
