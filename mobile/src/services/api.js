@@ -42,8 +42,8 @@ export default api;
 
 // Auth
 export const authService = {
-  login: (email, password, fcmToken = null) =>
-    api.post('/auth/login', {email, password, fcm_token: fcmToken}),
+  login: (username, password, fcmToken = null) =>
+    api.post('/auth/login', {login: username, password, fcm_token: fcmToken}),
   logout: () => api.post('/auth/logout'),
   me: () => api.get('/auth/me'),
   changePassword: (passwordLama, passwordBaru, passwordBaruConfirmation) =>
@@ -74,4 +74,7 @@ export const leaveService = {
   getAll: (page = 1) => api.get('/leave', {params: {page}}),
   getById: id => api.get(`/leave/${id}`),
   create: formData => api.post('/leave', formData),
+  getPending: (page = 1) => api.get('/leave/pending/list', {params: {page}}),
+  approve: (id, catatan = '') => api.post(`/leave/${id}/approve`, {catatan}),
+  reject: (id, catatan) => api.post(`/leave/${id}/reject`, {catatan}),
 };

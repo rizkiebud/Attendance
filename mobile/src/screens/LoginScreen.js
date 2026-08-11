@@ -20,19 +20,19 @@ import {COLORS} from '../utils/colors';
 
 const LoginScreen = () => {
   const {login} = useAuth();
-  const [email, setEmail] = useState('');
+  const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
   const handleLogin = async () => {
-    if (!email.trim() || !password.trim()) {
-      Alert.alert('Perhatian', 'Email dan password harus diisi');
+    if (!username.trim() || !password.trim()) {
+      Alert.alert('Perhatian', 'Username dan password harus diisi');
       return;
     }
 
     setIsLoading(true);
-    const result = await login(email.trim(), password);
+    const result = await login(username.trim(), password);
     setIsLoading(false);
 
     if (!result.success) {
@@ -66,17 +66,17 @@ const LoginScreen = () => {
             Masukkan akun Anda untuk melanjutkan
           </Text>
 
-          {/* Email Field */}
+          {/* Username Field */}
           <View style={styles.inputContainer}>
-            <Icon name="mail-outline" size={20} color={COLORS.gray} style={styles.inputIcon} />
+            <Icon name="person-outline" size={20} color={COLORS.gray} style={styles.inputIcon} />
             <TextInput
               style={styles.input}
-              placeholder="Email"
+              placeholder="Username atau Email"
               placeholderTextColor={COLORS.gray}
-              value={email}
-              onChangeText={setEmail}
-              keyboardType="email-address"
+              value={username}
+              onChangeText={setUsername}
               autoCapitalize="none"
+              keyboardType="email-address"
               autoCorrect={false}
             />
           </View>

@@ -18,12 +18,14 @@ import IzinScreen from '../screens/IzinScreen';
 import ProfilScreen from '../screens/ProfilScreen';
 import AjukanIzinScreen from '../screens/AjukanIzinScreen';
 import DetailAbsensiScreen from '../screens/DetailAbsensiScreen';
+import PersetujuanIzinScreen from '../screens/PersetujuanIzinScreen';
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 
 const MainTabs = () => {
   const insets = useSafeAreaInsets();
+  const {canApproveLeave} = useAuth();
 
   return (
     <Tab.Navigator
@@ -48,6 +50,7 @@ const MainTabs = () => {
             Absensi: focused ? 'qr-code' : 'qr-code-outline',
             Histori: focused ? 'calendar' : 'calendar-outline',
             Izin: focused ? 'document-text' : 'document-text-outline',
+            'Persetujuan': focused ? 'checkmark-done' : 'checkmark-done-outline',
             Profil: focused ? 'person' : 'person-outline',
           };
           return <Icon name={icons[route.name] || 'help'} size={22} color={color} />;
@@ -57,6 +60,9 @@ const MainTabs = () => {
       <Tab.Screen name="Absensi" component={AbsensiScreen} />
       <Tab.Screen name="Histori" component={HistoriScreen} />
       <Tab.Screen name="Izin" component={IzinScreen} />
+      {canApproveLeave && (
+        <Tab.Screen name="Persetujuan" component={PersetujuanIzinScreen} />
+      )}
       <Tab.Screen name="Profil" component={ProfilScreen} />
     </Tab.Navigator>
   );

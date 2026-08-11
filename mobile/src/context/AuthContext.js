@@ -32,9 +32,9 @@ export const AuthProvider = ({children}) => {
     }
   };
 
-  const login = async (email, password) => {
+  const login = async (username, password) => {
     try {
-      const response = await authService.login(email, password);
+      const response = await authService.login(username, password);
       const {token, user: userData} = response.data.data;
 
       await AsyncStorage.setItem('auth_token', token);
@@ -79,6 +79,7 @@ export const AuthProvider = ({children}) => {
         employee,
         isLoading,
         isAuthenticated,
+        canApproveLeave: user?.can_approve_leave === true,
         login,
         logout,
         refreshUser,
