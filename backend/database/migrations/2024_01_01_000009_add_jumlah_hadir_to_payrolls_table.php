@@ -9,14 +9,18 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('payrolls', function (Blueprint $table) {
-            $table->unsignedTinyInteger('jumlah_hadir')->default(0)->after('tunjangan_jabatan');
+            if (!Schema::hasColumn('payrolls', 'jumlah_hadir')) {
+                $table->unsignedTinyInteger('jumlah_hadir')->default(0)->after('tunjangan_jabatan');
+            }
         });
     }
 
     public function down(): void
     {
-        Schema::table('payrolls', function (Blueprint $table) {
-            $table->dropColumn('jumlah_hadir');
-        });
+        if (Schema::hasColumn('payrolls', 'jumlah_hadir')) {
+            Schema::table('payrolls', function (Blueprint $table) {
+                $table->dropColumn('jumlah_hadir');
+            });
+        }
     }
 };
