@@ -53,38 +53,6 @@ php artisan storage:link
 php artisan serve
 ```
 
-### Akun Default (dari seeder)
-
-| Role    | Email                  | Password     |
-|---------|------------------------|--------------|
-| Admin   | admin@kppn.go.id       | password123  |
-| Karyawan| budi@kppn.go.id        | password123  |
-| Karyawan| siti@kppn.go.id        | password123  |
-| Karyawan| ahmad@kppn.go.id       | password123  |
-
-### URL Web Admin
-- Login: `http://localhost:8000/admin/login`
-- Dashboard: `http://localhost:8000/admin/dashboard`
-
-### API Endpoints
-
-| Method | URL                          | Deskripsi                |
-|--------|------------------------------|--------------------------|
-| POST   | /api/auth/login              | Login                    |
-| POST   | /api/auth/logout             | Logout                   |
-| GET    | /api/auth/me                 | Profil user              |
-| POST   | /api/auth/change-password    | Ubah password            |
-| GET    | /api/dashboard               | Dashboard karyawan       |
-| GET    | /api/attendance/offices      | Daftar kantor            |
-| GET    | /api/attendance/today        | Absensi hari ini         |
-| POST   | /api/attendance/check-in     | Absen masuk (GPS)        |
-| POST   | /api/attendance/check-out    | Absen keluar (GPS)       |
-| GET    | /api/attendance/history      | Riwayat absensi          |
-| GET    | /api/leave                   | Daftar permohonan izin   |
-| POST   | /api/leave                   | Ajukan permohonan izin   |
-| GET    | /api/leave/{id}              | Detail permohonan        |
-
----
 
 ## Mobile App (React Native)
 
@@ -120,20 +88,6 @@ npx react-native run-ios
 npx react-native run-android
 ```
 
-### Konfigurasi API URL
-
-Edit file `mobile/src/services/api.js`:
-
-```javascript
-// Untuk Android Emulator
-export const BASE_URL = 'http://10.0.2.2:8000';
-
-// Untuk perangkat fisik (ganti dengan IP komputer Anda)
-export const BASE_URL = 'http://192.168.1.x:8000';
-
-// Untuk iOS Simulator
-export const BASE_URL = 'http://localhost:8000';
-```
 
 ### Izin Aplikasi
 - **GPS/Lokasi**: Diperlukan untuk absensi berbasis koordinat
