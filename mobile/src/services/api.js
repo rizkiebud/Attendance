@@ -28,14 +28,26 @@ api.interceptors.request.use(
   error => Promise.reject(error),
 );
 
-// Response interceptor - handle 401
+// Response interceptor - handle 401 with silent refresh
 api.interceptors.response.use(
   response => response,
   async error => {
-    if (error.response?.status === 401 && !error.config?._retried) {
-      error.config._retried = true;
-      await AsyncStorage.multiRemove(['auth_token', 'user_data']);
-      emit('auth:unauthorized');
+    const original = error.config;
+    if (error.response?.status === 401 && original && !original._retried) {
+      original._retried = true;
+      try {
+        const r = await axios.post(`${API_URL}/auth/refresh`, null, {
+          headers: {Authorization: original.headers?.Authorization},
+        });
+        const newToken = r.data.data.token;
+        await AsyncStorage.setItem('auth_token', newToken);
+        original.headers.Authorization = `Bearer ${newToken}`;
+        return api(original); // retry original request
+      } catch (refreshErr) {
+        // Refresh failed — token invalid/expired. Force logout.
+        await AsyncStorage.multiRemove(['auth_token', 'user_data']);
+        emit('auth:unauthorized');
+      }
     }
     return Promise.reject(error);
   },

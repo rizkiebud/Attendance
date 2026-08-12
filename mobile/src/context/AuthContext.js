@@ -27,10 +27,15 @@ export const AuthProvider = ({children}) => {
       const userData = await AsyncStorage.getItem('user_data');
 
       if (token && userData) {
-        const parsed = JSON.parse(userData);
-        setUser(parsed);
-        setEmployee(parsed.employee);
-        setIsAuthenticated(true);
+        try {
+          const parsed = JSON.parse(userData);
+          setUser(parsed);
+          setEmployee(parsed.employee);
+          setIsAuthenticated(true);
+        } catch {
+          // Corrupt stored user_data — clear token so user isn't stuck logged out
+          await AsyncStorage.multiRemove(['auth_token', 'user_data']);
+        }
       }
     } catch (error) {
       console.error('Auth state check error:', error);
@@ -76,7 +81,14 @@ export const AuthProvider = ({children}) => {
       await AsyncStorage.setItem('user_data', JSON.stringify(userData));
       setUser(userData);
       setEmployee(userData.employee);
-    } catch {}
+      return {success: true};
+    } catch (error) {
+      // If 401, interceptor already logged out; surface other errors
+      if (error.response?.status !== 401) {
+        console.error('Refresh user error:', error);
+      }
+      return {success: false};
+    }
   };
 
   return (

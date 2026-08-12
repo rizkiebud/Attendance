@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useRef} from 'react';
 import {
   View,
   Text,
@@ -31,10 +31,12 @@ const IzinScreen = ({navigation}) => {
   const [isLoading, setIsLoading] = useState(false);
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
+  const pageRef = useRef(1);
 
   useEffect(() => {
     const unsubscribe = navigation.addListener('focus', () => {
       setLeaves([]);
+      pageRef.current = 1;
       setPage(1);
       fetchLeaves(1, true);
     });
@@ -58,7 +60,8 @@ const IzinScreen = ({navigation}) => {
 
   const loadMore = () => {
     if (hasMore && !isLoading) {
-      const nextPage = page + 1;
+      const nextPage = pageRef.current + 1;
+      pageRef.current = nextPage;
       setPage(nextPage);
       fetchLeaves(nextPage);
     }

@@ -52,7 +52,10 @@ const HistoriScreen = ({navigation}) => {
 
   const nextMonth = () => {
     const now = new Date();
-    if (tahun === now.getFullYear() && bulan === now.getMonth() + 1) return;
+    const curBulan = now.getMonth() + 1;
+    const curTahun = now.getFullYear();
+    // Hard-cap: can't navigate past current month
+    if (tahun > curTahun || (tahun === curTahun && bulan >= curBulan)) return;
     if (bulan === 12) {
       setBulan(1);
       setTahun(tahun + 1);
@@ -70,13 +73,17 @@ const HistoriScreen = ({navigation}) => {
     );
   };
 
-  const renderItem = ({item, index}) => (
+  const renderItem = ({item, index}) => {
+    const parts = item.tanggal ? item.tanggal.split('-') : [];
+    const day = parts[2]?.replace(/^0/, '') || '--';
+    const month = parts[1] ? getNamaBulan(parseInt(parts[1])).substring(0, 3) : '';
+    return (
     <TouchableOpacity
       style={styles.historyItem}
       onPress={() => navigation.navigate('DetailAbsensi', {attendance: item})}>
       <View style={styles.dateBox}>
-        <Text style={styles.dateDay}>{item.tanggal.split('-')[2]?.replace(/^0/, '')}</Text>
-        <Text style={styles.dateMonth}>{getNamaBulan(parseInt(item.tanggal.split('-')[1])).substring(0, 3)}</Text>
+        <Text style={styles.dateDay}>{day}</Text>
+        <Text style={styles.dateMonth}>{month}</Text>
       </View>
       <View style={styles.itemInfo}>
         <Text style={styles.itemDate}>{formatTanggal(item.tanggal)}</Text>
@@ -98,6 +105,7 @@ const HistoriScreen = ({navigation}) => {
       <StatusBadge status={item.status} />
     </TouchableOpacity>
   );
+  };
 
   return (
     <SafeAreaView style={styles.container} edges={['top', 'bottom']}>

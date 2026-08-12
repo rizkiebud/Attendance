@@ -117,8 +117,8 @@ const ProfilScreen = () => {
         {/* Info Karyawan */}
         <View style={styles.card}>
           <Text style={styles.cardTitle}>Informasi Karyawan</Text>
-          <InfoItem icon="id-card-outline" label="NIP" value={employee?.nip} />
-          <InfoItem icon="briefcase-outline" label="Jabatan" value={employee?.jabatan} />
+          <InfoItem icon="id-card-outline" label="No. ID" value={employee?.nip} />
+          <InfoItem icon="briefcase-outline" label="Posisi" value={employee?.jabatan} />
           <InfoItem icon="business-outline" label="Departemen" value={employee?.departemen} />
           <InfoItem icon="call-outline" label="Telepon" value={employee?.telepon} />
           <InfoItem icon="location-outline" label="Alamat" value={employee?.alamat} />

@@ -76,7 +76,6 @@ const LoginScreen = () => {
               value={username}
               onChangeText={setUsername}
               autoCapitalize="none"
-              keyboardType="email-address"
               autoCorrect={false}
             />
           </View>

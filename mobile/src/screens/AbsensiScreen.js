@@ -1,4 +1,4 @@
-import React, {useState, useEffect, useCallback} from 'react';
+import React, {useState, useEffect, useCallback, useRef} from 'react';
 import {
   View,
   Text,
@@ -30,6 +30,7 @@ const AbsensiScreen = () => {
   const [locationError, setLocationError] = useState(null);
   const [fotoUri, setFotoUri] = useState(null);
   const [jarak, setJarak] = useState(null);
+  const selectedOfficeRef = useRef(null);
 
   useFocusEffect(
     useCallback(() => {
@@ -46,7 +47,9 @@ const AbsensiScreen = () => {
       const officeList = officesRes.data.data;
       setOffices(officeList);
       setTodayAttendance(todayRes.data.data);
-      if (officeList.length > 0 && !selectedOffice) {
+      // Preserve user-selected office across refocus; default to first only once
+      if (officeList.length > 0 && !selectedOfficeRef.current) {
+        selectedOfficeRef.current = officeList[0];
         setSelectedOffice(officeList[0]);
       }
     } catch (err) {
@@ -70,6 +73,7 @@ const AbsensiScreen = () => {
   };
 
   const getCurrentLocation = async () => {
+    if (isLocating) return;
     setIsLocating(true);
     setLocationError(null);
 
@@ -80,44 +84,35 @@ const AbsensiScreen = () => {
       return;
     }
 
-    Geolocation.getCurrentPosition(
-      position => {
-        const {latitude, longitude, accuracy} = position.coords;
-        setCurrentLocation({latitude, longitude, accuracy});
-
-        if (selectedOffice) {
-          const dist = hitungJarak(
-            latitude, longitude,
-            parseFloat(selectedOffice.latitude),
-            parseFloat(selectedOffice.longitude),
-          );
-          setJarak(dist);
-        }
-        setIsLocating(false);
-      },
-      error => {
-        // Fallback: coba tanpa high accuracy
-        Geolocation.getCurrentPosition(
-          pos => {
-            const {latitude, longitude, accuracy} = pos.coords;
-            setCurrentLocation({latitude, longitude, accuracy});
-            if (selectedOffice) {
-              const dist = hitungJarak(
-                latitude, longitude,
-                parseFloat(selectedOffice.latitude),
-                parseFloat(selectedOffice.longitude),
-              );
-              setJarak(dist);
-            }
-            setIsLocating(false);
-          },
-          err => {
-            setLocationError('Gagal mendapatkan lokasi: ' + err.message);
-            setIsLocating(false);
-          },
-          {enableHighAccuracy: false, timeout: 20000, maximumAge: 60000},
+    const onPosition = pos => {
+      const {latitude, longitude, accuracy} = pos.coords;
+      setCurrentLocation({latitude, longitude, accuracy});
+      if (selectedOfficeRef.current) {
+        const dist = hitungJarak(
+          latitude, longitude,
+          parseFloat(selectedOfficeRef.current.latitude),
+          parseFloat(selectedOfficeRef.current.longitude),
         );
-      },
+        setJarak(dist);
+      }
+      setIsLocating(false);
+    };
+
+    const onError = err => {
+      // Fallback: coba tanpa high accuracy
+      Geolocation.getCurrentPosition(
+        onPosition,
+        () => {
+          setLocationError('Gagal mendapatkan lokasi');
+          setIsLocating(false);
+        },
+        {enableHighAccuracy: false, timeout: 20000, maximumAge: 60000},
+      );
+    };
+
+    Geolocation.getCurrentPosition(
+      onPosition,
+      onError,
       {
         enableHighAccuracy: true,
         timeout: 15000,
@@ -140,8 +135,24 @@ const AbsensiScreen = () => {
     }
   }, [selectedOffice, currentLocation]);
 
+  const requestCameraPermission = async () => {
+    const permission =
+      Platform.OS === 'ios' ? PERMISSIONS.IOS.CAMERA : PERMISSIONS.ANDROID.CAMERA;
+    const result = await request(permission);
+    return result === RESULTS.GRANTED;
+  };
+
   const takeFoto = async () => {
     try {
+      const granted = await requestCameraPermission();
+      if (!granted) {
+        Alert.alert(
+          'Izin Kamera',
+          'Aktifkan izin kamera untuk mengambil foto selfie',
+        );
+        return;
+      }
+
       const result = await launchCamera({
         mediaType: 'photo',
         quality: 0.7,
@@ -151,8 +162,12 @@ const AbsensiScreen = () => {
 
       if (!result.didCancel && result.assets?.[0]) {
         setFotoUri(result.assets[0].uri);
-      } else if (result.errorCode === 'camera_unavailable') {
-        // Emulator / no camera — fallback to gallery
+      } else if (
+        result.errorCode === 'camera_unavailable' ||
+        result.errorCode === 'others' ||
+        result.errorCode === 'permission'
+      ) {
+        // No camera / error — fallback to gallery
         Alert.alert(
           'Kamera Tidak Tersedia',
           'Pilih foto dari galeri?',
@@ -184,17 +199,20 @@ const AbsensiScreen = () => {
       return;
     }
 
-    if (!selectedOffice) {
-      Alert.alert('Perhatian', 'Pilih kantor terlebih dahulu');
-      return;
-    }
-
-    if (jarak && jarak > selectedOffice.radius) {
-      Alert.alert(
-        'Di Luar Jangkauan',
-        `Anda berada ${formatJarak(jarak)} dari kantor. Radius maksimal: ${selectedOffice.radius}m`,
-      );
-      return;
+    // Client-side radius check only for check-in. On check-out the backend
+    // validates against the office used at check-in, so let the server decide.
+    if (type === 'masuk') {
+      if (!selectedOffice) {
+        Alert.alert('Perhatian', 'Pilih kantor terlebih dahulu');
+        return;
+      }
+      if (jarak && jarak > selectedOffice.radius) {
+        Alert.alert(
+          'Di Luar Jangkauan',
+          `Anda berada ${formatJarak(jarak)} dari kantor. Radius maksimal: ${selectedOffice.radius}m`,
+        );
+        return;
+      }
     }
 
     setIsLoading(true);
@@ -203,8 +221,11 @@ const AbsensiScreen = () => {
       const formData = new FormData();
       formData.append('latitude', currentLocation.latitude.toString());
       formData.append('longitude', currentLocation.longitude.toString());
-      formData.append('office_id', selectedOffice.id.toString());
       formData.append('device_info', Platform.OS + ' ' + Platform.Version);
+
+      if (type === 'masuk' && selectedOffice) {
+        formData.append('office_id', selectedOffice.id.toString());
+      }
 
       if (fotoUri) {
         formData.append('foto', {
@@ -294,7 +315,10 @@ const AbsensiScreen = () => {
                 styles.officeItem,
                 selectedOffice?.id === office.id && styles.officeItemActive,
               ]}
-              onPress={() => setSelectedOffice(office)}>
+              onPress={() => {
+                selectedOfficeRef.current = office;
+                setSelectedOffice(office);
+              }}>
               <Icon
                 name="business-outline"
                 size={18}

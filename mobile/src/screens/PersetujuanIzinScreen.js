@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useRef} from 'react';
 import {
   View,
   Text,
@@ -29,6 +29,7 @@ const PersetujuanIzinScreen = ({navigation}) => {
   const [approvingId, setApprovingId] = useState(null);
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
+  const pageRef = useRef(1);
 
   // Modal tolak
   const [rejectTarget, setRejectTarget] = useState(null);
@@ -36,7 +37,11 @@ const PersetujuanIzinScreen = ({navigation}) => {
   const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
-    const focusUnsub = navigation.addListener('focus', () => fetchPending(1, true));
+    const focusUnsub = navigation.addListener('focus', () => {
+      pageRef.current = 1;
+      setPage(1);
+      fetchPending(1, true);
+    });
     return focusUnsub;
   }, []);
 
@@ -57,7 +62,8 @@ const PersetujuanIzinScreen = ({navigation}) => {
 
   const loadMore = () => {
     if (hasMore && !isLoading) {
-      const nextPage = page + 1;
+      const nextPage = pageRef.current + 1;
+      pageRef.current = nextPage;
       setPage(nextPage);
       fetchPending(nextPage);
     }
@@ -76,6 +82,7 @@ const PersetujuanIzinScreen = ({navigation}) => {
             try {
               await leaveService.approve(item.id);
               setLeaves(prev => prev.filter(i => i.id !== item.id));
+              pageRef.current = 1;
               setPage(1);
               fetchPending(1, true);
               Alert.alert('Berhasil', 'Permohonan telah disetujui');
@@ -107,6 +114,7 @@ const PersetujuanIzinScreen = ({navigation}) => {
     try {
       await leaveService.reject(rejectTarget.id, catatan.trim());
       setRejectTarget(null);
+      pageRef.current = 1;
       setPage(1);
       fetchPending(1, true);
       Alert.alert('Berhasil', 'Permohonan telah ditolak');
