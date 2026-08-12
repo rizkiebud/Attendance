@@ -46,6 +46,6 @@ class CheckJabatan
                 'message' => 'Akses ditolak.',
             ], 403);
         }
-        return redirect()->route('web.dashboard')->with('error', 'Anda tidak memiliki akses ke halaman tersebut.');
+        abort(403, 'Anda tidak memiliki akses ke halaman tersebut.');
     }
 }

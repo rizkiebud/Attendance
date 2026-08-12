@@ -56,7 +56,9 @@ class LeaveController extends Controller
             return back()->with('error', 'Tidak ada kantor aktif. Tambahkan kantor terlebih dahulu.');
         }
         while ($tanggal->lte($leave->tanggal_selesai)) {
-            Attendance::updateOrCreate(
+            // firstOrCreate agar tidak menimpa absensi asli (hadir/terlambat) yang
+            // sudah tercatat pada tanggal tersebut.
+            Attendance::firstOrCreate(
                 [
                     'employee_id' => $leave->employee_id,
                     'tanggal' => $tanggal->toDateString(),

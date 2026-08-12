@@ -159,7 +159,7 @@ class EmployeeController extends Controller
             'telepon' => $request->telepon,
             'alamat' => $request->alamat,
             'foto' => $fotoPath,
-            'aktif' => $request->has('aktif') ? $request->boolean('aktif') : true,
+            'aktif' => $request->has('aktif') ? $request->boolean('aktif') : $employee->aktif,
         ]);
 
         $employee->user->update(['name' => $request->nama, 'username' => $request->username]);

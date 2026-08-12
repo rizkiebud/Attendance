@@ -23,7 +23,10 @@ class DashboardController extends Controller
         $absensiHariIni = $this->filterAttendanceQuery(Attendance::whereDate('tanggal', $today));
         $hadirHariIni = (clone $absensiHariIni)->whereIn('status', ['hadir', 'terlambat'])->count();
         $terlambatHariIni = (clone $absensiHariIni)->where('status', 'terlambat')->count();
-        $tidakHadirHariIni = $totalKaryawan - $hadirHariIni;
+        // Tidak hadir = total karyawan dikurangi hadir, terlambat, izin & sakit.
+        $tidakHadirHariIni = $totalKaryawan
+            - $hadirHariIni
+            - (clone $absensiHariIni)->whereIn('status', ['izin', 'sakit'])->count();
 
         // Absensi bulan ini
         $absensBulanIni = $this->filterAttendanceQuery(

@@ -10,15 +10,8 @@ use App\Http\Controllers\Web\PayrollController;
 use App\Http\Controllers\Web\RoleController;
 use Illuminate\Support\Facades\Route;
 
-// Root redirect
-Route::get('/', function () {
-    return redirect()->route('web.login');
-});
-
-// Alias buat default auth middleware (redirect ke web.login)
-Route::get('/login', function () {
-    return redirect()->route('web.login');
-})->name('login');
+// Root redirect ke halaman login web admin
+Route::redirect('/', '/admin/login');
 
 // Auth routes
 Route::prefix('admin')->name('web.')->group(function () {

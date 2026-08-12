@@ -34,6 +34,8 @@ class PayrollController extends Controller
 
     public function create(Request $request)
     {
+        $request->validate(['employee_id' => 'required|exists:employees,id']);
+
         $periode = $request->periode ?: now()->format('Y-m');
         $employee = Employee::findOrFail($request->employee_id);
         $payroll = Payroll::where('employee_id', $employee->id)->where('periode', $periode . '-01')->first();
