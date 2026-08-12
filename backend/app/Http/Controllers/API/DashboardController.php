@@ -35,7 +35,7 @@ class DashboardController extends Controller
             ->get();
 
         $summary = [
-            'hadir' => $monthlyAttendances->whereIn('status', ['hadir', 'terlambat'])->count(),
+            'hadir' => $monthlyAttendances->where('status', 'hadir')->count(),
             'terlambat' => $monthlyAttendances->where('status', 'terlambat')->count(),
             'tidak_hadir' => $monthlyAttendances->where('status', 'tidak_hadir')->count(),
             'izin_sakit' => $monthlyAttendances->whereIn('status', ['izin', 'sakit'])->count(),

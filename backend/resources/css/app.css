@@ -109,7 +109,11 @@ body {
     z-index: 100;
 }
 .topbar-title { font-size: 1.1rem; font-weight: 600; color: #1e293b; margin: 0; }
-.page-content { padding: 1.5rem; }
+.page-content { padding: 1.5rem; padding-bottom: 3rem; }
+
+/* Footer */
+.footer { position: fixed; bottom: 0; left: var(--sidebar-width); right: 0; border-top: 1px solid #e2e8f0; background: #fff; z-index: 99; }
+.main-content.mini .footer { left: var(--sidebar-mini-width); }
 
 /* Cards */
 .stat-card { border: none; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
@@ -185,4 +189,5 @@ nav .small.text-muted { font-size: 0.75rem !important; }
     .sidebar { transform: translateX(-100%); }
     .sidebar.show { transform: translateX(0); }
     .main-content { margin-left: 0; }
+    .footer { left: 0; }
 }
