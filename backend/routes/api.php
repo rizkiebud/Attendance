@@ -15,6 +15,9 @@ use Illuminate\Support\Facades\Route;
 // Public routes
 Route::prefix('auth')->group(function () {
     Route::post('/login', [AuthController::class, 'login']);
+    // Refresh harus publik: token lama sudah kedaluwarsa saat dipakai,
+    // middleware auth:api menolak sebelum controller refresh sempat jalan.
+    Route::post('/refresh', [AuthController::class, 'refresh']);
 });
 
 // Protected routes (require JWT auth)
@@ -23,7 +26,6 @@ Route::middleware(['auth:api'])->group(function () {
     Route::prefix('auth')->group(function () {
         Route::post('/logout', [AuthController::class, 'logout']);
         Route::get('/me', [AuthController::class, 'me']);
-        Route::post('/refresh', [AuthController::class, 'refresh']);
         Route::post('/change-password', [AuthController::class, 'changePassword']);
     });
 
