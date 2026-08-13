@@ -29,32 +29,34 @@ const STATUS_BADGE = {
 const IzinScreen = ({navigation}) => {
   const [leaves, setLeaves] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
   const pageRef = useRef(1);
+  const fetchSeqRef = useRef(0);
 
   useEffect(() => {
     const unsubscribe = navigation.addListener('focus', () => {
       setLeaves([]);
       pageRef.current = 1;
-      setPage(1);
       fetchLeaves(1, true);
     });
     return unsubscribe;
   }, [navigation]);
 
   const fetchLeaves = async (pageNum = 1, reset = false) => {
-    if (isLoading) return;
+    const seq = ++fetchSeqRef.current;
     setIsLoading(true);
     try {
       const response = await leaveService.getAll(pageNum);
-      const {data: newData, last_page} = response.data.data;
+      if (seq !== fetchSeqRef.current) return; // respons basi, ada fetch lebih baru
+      const payload = response.data?.data;
+      const newData = payload?.data ?? [];
       setLeaves(prev => (reset ? newData : [...prev, ...newData]));
-      setHasMore(pageNum < last_page);
+      setHasMore(pageNum < (payload?.last_page ?? 1));
     } catch (err) {
+      if (seq !== fetchSeqRef.current) return;
       console.error('Leave fetch error:', err);
     } finally {
-      setIsLoading(false);
+      if (seq === fetchSeqRef.current) setIsLoading(false);
     }
   };
 
@@ -62,7 +64,6 @@ const IzinScreen = ({navigation}) => {
     if (hasMore && !isLoading) {
       const nextPage = pageRef.current + 1;
       pageRef.current = nextPage;
-      setPage(nextPage);
       fetchLeaves(nextPage);
     }
   };
@@ -115,7 +116,7 @@ const IzinScreen = ({navigation}) => {
 
   return (
     <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
-      <StatusBar barStyle="light-content" backgroundColor={COLORS.primaryDark} />
+      <StatusBar barStyle="light-content" backgroundColor={COLORS.primary} />
 
       <View style={styles.header}>
         <Text style={styles.headerTitle}>Permohonan Izin</Text>

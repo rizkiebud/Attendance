@@ -42,6 +42,8 @@ const HistoriScreen = ({navigation}) => {
   };
 
   const prevMonth = () => {
+    // Batas bawah: Januari 2024 (awal sistem)
+    if (tahun <= 2024 && bulan === 1) return;
     if (bulan === 1) {
       setBulan(12);
       setTahun(tahun - 1);
@@ -109,7 +111,7 @@ const HistoriScreen = ({navigation}) => {
 
   return (
     <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
-      <StatusBar barStyle="light-content" backgroundColor={COLORS.primaryDark} />
+      <StatusBar barStyle="light-content" backgroundColor={COLORS.primary} />
 
       <View style={styles.header}>
         <Text style={styles.headerTitle}>Riwayat Absensi</Text>

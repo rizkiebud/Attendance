@@ -55,7 +55,7 @@ const DashboardScreen = ({navigation}) => {
 
   return (
     <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
-      <StatusBar barStyle="light-content" backgroundColor={COLORS.primaryDark} />
+      <StatusBar barStyle="light-content" backgroundColor={COLORS.primary} />
 
       {/* Header */}
       <View style={styles.header}>

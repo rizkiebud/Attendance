@@ -31,6 +31,7 @@ const AbsensiScreen = () => {
   const [fotoUri, setFotoUri] = useState(null);
   const [jarak, setJarak] = useState(null);
   const selectedOfficeRef = useRef(null);
+  const officesRef = useRef([]);
 
   useFocusEffect(
     useCallback(() => {
@@ -45,10 +46,15 @@ const AbsensiScreen = () => {
         attendanceService.getToday(),
       ]);
       const officeList = officesRes.data.data;
+      officesRef.current = officeList;
       setOffices(officeList);
       setTodayAttendance(todayRes.data.data);
-      // Preserve user-selected office across refocus; default to first only once
-      if (officeList.length > 0 && !selectedOfficeRef.current) {
+      // Preserve user-selected office across refocus; reset jika kantor lama
+      // sudah tidak ada di daftar server (dihapus/dinonaktifkan)
+      const stillExists =
+        selectedOfficeRef.current &&
+        officeList.some(o => o.id === selectedOfficeRef.current.id);
+      if (officeList.length > 0 && !stillExists) {
         selectedOfficeRef.current = officeList[0];
         setSelectedOffice(officeList[0]);
       }
@@ -87,19 +93,39 @@ const AbsensiScreen = () => {
     const onPosition = pos => {
       const {latitude, longitude, accuracy} = pos.coords;
       setCurrentLocation({latitude, longitude, accuracy});
-      if (selectedOfficeRef.current) {
-        const dist = hitungJarak(
+      // Urutkan kantor dari paling dekat, lalu auto-pilih yang terdekat
+      const officeList = officesRef.current;
+      if (officeList.length > 0) {
+        const sorted = [...officeList].sort((a, b) => {
+          const dA = hitungJarak(
+            latitude, longitude,
+            parseFloat(a.latitude), parseFloat(a.longitude),
+          );
+          const dB = hitungJarak(
+            latitude, longitude,
+            parseFloat(b.latitude), parseFloat(b.longitude),
+          );
+          return dA - dB;
+        });
+        const nearest = sorted[0];
+        selectedOfficeRef.current = nearest;
+        setSelectedOffice(nearest);
+        setJarak(hitungJarak(
           latitude, longitude,
-          parseFloat(selectedOfficeRef.current.latitude),
-          parseFloat(selectedOfficeRef.current.longitude),
-        );
-        setJarak(dist);
+          parseFloat(nearest.latitude), parseFloat(nearest.longitude),
+        ));
       }
       setIsLocating(false);
     };
 
     const onError = err => {
-      // Fallback: coba tanpa high accuracy
+      // Tolak izin / layanan mati: jangan coba fallback — error permanen.
+      if (err?.code === 1 || err?.code === 'PERMISSION_DENIED') {
+        setLocationError('Izin lokasi diperlukan untuk absensi');
+        setIsLocating(false);
+        return;
+      }
+      // Kegagalan sinyal: coba sekali tanpa high accuracy
       Geolocation.getCurrentPosition(
         onPosition,
         () => {
@@ -206,10 +232,17 @@ const AbsensiScreen = () => {
         Alert.alert('Perhatian', 'Pilih kantor terlebih dahulu');
         return;
       }
-      if (jarak && jarak > selectedOffice.radius) {
+      // Hitung jarak langsung saat submit — hindari race dengan state jarak
+      const dist = hitungJarak(
+        currentLocation.latitude,
+        currentLocation.longitude,
+        parseFloat(selectedOffice.latitude),
+        parseFloat(selectedOffice.longitude),
+      );
+      if (dist > selectedOffice.radius) {
         Alert.alert(
           'Di Luar Jangkauan',
-          `Anda berada ${formatJarak(jarak)} dari kantor. Radius maksimal: ${selectedOffice.radius}m`,
+          `Anda berada ${formatJarak(dist)} dari kantor. Radius maksimal: ${selectedOffice.radius}m`,
         );
         return;
       }
@@ -264,7 +297,7 @@ const AbsensiScreen = () => {
 
   return (
     <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
-      <StatusBar barStyle="light-content" backgroundColor={COLORS.primaryDark} />
+      <StatusBar barStyle="light-content" backgroundColor={COLORS.primary} />
 
       <View style={styles.header}>
         <Text style={styles.headerTitle}>Absensi</Text>
@@ -308,22 +341,38 @@ const AbsensiScreen = () => {
         {/* Pilih Kantor */}
         <View style={styles.card}>
           <Text style={styles.cardLabel}>Lokasi Kantor</Text>
-          {offices.map(office => (
-            <TouchableOpacity
-              key={office.id}
-              style={[
-                styles.officeItem,
-                selectedOffice?.id === office.id && styles.officeItemActive,
-              ]}
-              onPress={() => {
-                selectedOfficeRef.current = office;
-                setSelectedOffice(office);
-              }}>
-              <Icon
-                name="business-outline"
-                size={18}
-                color={selectedOffice?.id === office.id ? COLORS.primary : COLORS.gray}
-              />
+          {(() => {
+            // Urutkan kantor dari terdekat jika lokasi GPS sudah aktif
+            let list = offices;
+            if (currentLocation) {
+              list = [...offices].sort((a, b) => {
+                const dA = hitungJarak(
+                  currentLocation.latitude, currentLocation.longitude,
+                  parseFloat(a.latitude), parseFloat(a.longitude),
+                );
+                const dB = hitungJarak(
+                  currentLocation.latitude, currentLocation.longitude,
+                  parseFloat(b.latitude), parseFloat(b.longitude),
+                );
+                return dA - dB;
+              });
+            }
+            return list.map(office => (
+              <TouchableOpacity
+                key={office.id}
+                style={[
+                  styles.officeItem,
+                  selectedOffice?.id === office.id && styles.officeItemActive,
+                ]}
+                onPress={() => {
+                  selectedOfficeRef.current = office;
+                  setSelectedOffice(office);
+                }}>
+                <Icon
+                  name="business-outline"
+                  size={18}
+                  color={selectedOffice?.id === office.id ? COLORS.primary : COLORS.gray}
+                />
               <View style={{flex: 1, marginLeft: 8}}>
                 <Text style={[
                   styles.officeName,
@@ -338,8 +387,9 @@ const AbsensiScreen = () => {
               {selectedOffice?.id === office.id && (
                 <Icon name="checkmark-circle" size={20} color={COLORS.primary} />
               )}
-            </TouchableOpacity>
-          ))}
+              </TouchableOpacity>
+            ));
+          })()}
         </View>
 
         {/* GPS */}

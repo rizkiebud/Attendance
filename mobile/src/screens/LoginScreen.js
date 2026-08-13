@@ -45,7 +45,7 @@ const LoginScreen = () => {
       <KeyboardAvoidingView
         style={styles.flex}
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
-        <StatusBar barStyle="light-content" backgroundColor={COLORS.primaryDark} />
+        <StatusBar barStyle="light-content" backgroundColor={COLORS.primary} />
         <ScrollView
           contentContainerStyle={styles.scrollContent}
           keyboardShouldPersistTaps="handled">

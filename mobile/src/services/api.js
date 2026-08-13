@@ -38,6 +38,7 @@ api.interceptors.response.use(
       try {
         const r = await axios.post(`${API_URL}/auth/refresh`, null, {
           headers: {Authorization: original.headers?.Authorization},
+          timeout: 15000,
         });
         const newToken = r.data.data.token;
         await AsyncStorage.setItem('auth_token', newToken);

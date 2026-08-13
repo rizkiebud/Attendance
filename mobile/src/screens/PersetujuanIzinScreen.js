@@ -10,10 +10,13 @@ import {
   Alert,
   TextInput,
   Modal,
+  ToastAndroid,
+  Platform,
 } from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import Icon from 'react-native-vector-icons/Ionicons';
 import {leaveService} from '../services/api';
+import {useNotification} from '../context/NotificationContext';
 import {COLORS} from '../utils/colors';
 import {formatTanggal} from '../utils/helpers';
 
@@ -24,12 +27,14 @@ const JENIS_COLORS = {
 };
 
 const PersetujuanIzinScreen = ({navigation}) => {
+  const {setPendingCount} = useNotification();
   const [leaves, setLeaves] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [approvingId, setApprovingId] = useState(null);
-  const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
+  const [lastNotifiedTotal, setLastNotifiedTotal] = useState(0);
   const pageRef = useRef(1);
+  const fetchSeqRef = useRef(0);
 
   // Modal tolak
   const [rejectTarget, setRejectTarget] = useState(null);
@@ -39,24 +44,45 @@ const PersetujuanIzinScreen = ({navigation}) => {
   useEffect(() => {
     const focusUnsub = navigation.addListener('focus', () => {
       pageRef.current = 1;
-      setPage(1);
       fetchPending(1, true);
     });
     return focusUnsub;
   }, []);
 
+  // Update notification count ketika leaves berubah
+  // (logika badge + toast dipindah ke fetchPending, pakai total server)
+
   const fetchPending = async (pageNum = 1, reset = false) => {
-    if (isLoading) return;
+    const seq = ++fetchSeqRef.current;
     setIsLoading(true);
     try {
       const response = await leaveService.getPending(pageNum);
-      const {data: newData, last_page} = response.data.data;
+      if (seq !== fetchSeqRef.current) return; // respons basi, ada fetch lebih baru
+      const payload = response.data?.data;
+      const newData = payload?.data ?? [];
       setLeaves(prev => (reset ? newData : [...prev, ...newData]));
-      setHasMore(pageNum < last_page);
+      setHasMore(!!payload && pageNum < payload.last_page);
+
+      // Badge + notifikasi pakai total server, bukan jumlah item termuat
+      const total = payload?.total ?? 0;
+      setPendingCount(total);
+      if (
+        total > lastNotifiedTotal &&
+        lastNotifiedTotal > 0 &&
+        Platform.OS === 'android'
+      ) {
+        ToastAndroid.show(
+          `Ada ${total - lastNotifiedTotal} permohonan baru yang menunggu!`,
+          ToastAndroid.LONG,
+        );
+      }
+      setLastNotifiedTotal(total);
     } catch (err) {
+      if (seq !== fetchSeqRef.current) return;
       console.error('Pending leave fetch error:', err);
+      setHasMore(false); // pertahankan data lama, jangan hapus list
     } finally {
-      setIsLoading(false);
+      if (seq === fetchSeqRef.current) setIsLoading(false);
     }
   };
 
@@ -64,7 +90,6 @@ const PersetujuanIzinScreen = ({navigation}) => {
     if (hasMore && !isLoading) {
       const nextPage = pageRef.current + 1;
       pageRef.current = nextPage;
-      setPage(nextPage);
       fetchPending(nextPage);
     }
   };
@@ -83,7 +108,6 @@ const PersetujuanIzinScreen = ({navigation}) => {
               await leaveService.approve(item.id);
               setLeaves(prev => prev.filter(i => i.id !== item.id));
               pageRef.current = 1;
-              setPage(1);
               fetchPending(1, true);
               Alert.alert('Berhasil', 'Permohonan telah disetujui');
             } catch (err) {
@@ -115,7 +139,6 @@ const PersetujuanIzinScreen = ({navigation}) => {
       await leaveService.reject(rejectTarget.id, catatan.trim());
       setRejectTarget(null);
       pageRef.current = 1;
-      setPage(1);
       fetchPending(1, true);
       Alert.alert('Berhasil', 'Permohonan telah ditolak');
     } catch (err) {
@@ -196,11 +219,11 @@ const PersetujuanIzinScreen = ({navigation}) => {
 
   return (
     <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
-      <StatusBar barStyle="light-content" backgroundColor={COLORS.primaryDark} />
+      <StatusBar barStyle="light-content" backgroundColor={COLORS.primary} />
 
       <View style={styles.header}>
         <Text style={styles.headerTitle}>Persetujuan Izin</Text>
-        <Text style={styles.headerSub}>Permohonan yang menunggu keputusan</Text>
+        <Text style={styles.headerSub}>Permohonan menunggu persetujuan</Text>
       </View>
 
       {isLoading && leaves.length === 0 ? (
@@ -339,3 +362,5 @@ const styles = StyleSheet.create({
   modalConfirm: {backgroundColor: COLORS.danger},
   modalConfirmText: {color: COLORS.white, fontWeight: '700'},
 });
+
+export default PersetujuanIzinScreen;

@@ -2,11 +2,12 @@ import React from 'react';
 import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
-import {ActivityIndicator, View} from 'react-native';
+import {ActivityIndicator, View, StyleSheet} from 'react-native';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import Icon from 'react-native-vector-icons/Ionicons';
 
 import {useAuth} from '../context/AuthContext';
+import {useNotification} from '../context/NotificationContext';
 import {COLORS} from '../utils/colors';
 
 // Screens
@@ -26,6 +27,7 @@ const Tab = createBottomTabNavigator();
 const MainTabs = () => {
   const insets = useSafeAreaInsets();
   const {canApproveLeave} = useAuth();
+  const {pendingCount} = useNotification();
 
   return (
     <Tab.Navigator
@@ -44,7 +46,7 @@ const MainTabs = () => {
           fontSize: 11,
           fontWeight: '600',
         },
-        tabBarIcon: ({focused, color, size}) => {
+        tabBarIcon: ({focused, color}) => {
           const icons = {
             Beranda: focused ? 'home' : 'home-outline',
             Absensi: focused ? 'qr-code' : 'qr-code-outline',
@@ -61,7 +63,14 @@ const MainTabs = () => {
       <Tab.Screen name="Histori" component={HistoriScreen} />
       <Tab.Screen name="Izin" component={IzinScreen} />
       {canApproveLeave && (
-        <Tab.Screen name="Persetujuan" component={PersetujuanIzinScreen} />
+        <Tab.Screen
+          name="Persetujuan"
+          component={PersetujuanIzinScreen}
+          options={{
+            tabBarBadge: pendingCount > 0 ? pendingCount : null,
+            tabBarBadgeStyle: {backgroundColor: COLORS.danger, color: COLORS.white, minWidth: 20},
+          }}
+        />
       )}
       <Tab.Screen name="Profil" component={ProfilScreen} />
     </Tab.Navigator>
@@ -115,5 +124,7 @@ const AppNavigator = () => {
     </NavigationContainer>
   );
 };
+
+const styles = StyleSheet.create({});
 
 export default AppNavigator;

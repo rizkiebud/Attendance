@@ -10,6 +10,7 @@ import {
   ActivityIndicator,
   Platform,
 } from 'react-native';
+import DateTimePicker from '@react-native-community/datetimepicker';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import Icon from 'react-native-vector-icons/Ionicons';
 import {leaveService} from '../services/api';
@@ -23,23 +24,49 @@ const JENIS_OPTIONS = [
 
 const AjukanIzinScreen = ({navigation}) => {
   const [jenis, setJenis] = useState('izin');
-  const [tanggalMulai, setTanggalMulai] = useState('');
-  const [tanggalSelesai, setTanggalSelesai] = useState('');
+  const [tanggalMulai, setTanggalMulai] = useState(new Date());
+  const [tanggalSelesai, setTanggalSelesai] = useState(new Date());
   const [alasan, setAlasan] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [showPicker, setShowPicker] = useState(false);
+  const [pickerField, setPickerField] = useState('mulai'); // 'mulai' | 'selesai'
 
-  const validateDate = dateStr => {
-    return /^\d{4}-\d{2}-\d{2}$/.test(dateStr);
+  const formatDateToString = date => {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  };
+
+  const openStartDatePicker = () => {
+    setPickerField('mulai');
+    setShowPicker(true);
+  };
+
+  const openEndDatePicker = () => {
+    setPickerField('selesai');
+    setShowPicker(true);
+  };
+
+  const onDateChange = (event, date) => {
+    // Android: dialog sekali pakai — tutup setelah pilih/dismiss.
+    // iOS: picker inline, tutup hanya saat dismiss.
+    if (Platform.OS !== 'ios' || event.type === 'dismissed') {
+      setShowPicker(false);
+    }
+    if (event.type === 'dismissed' || !date) return;
+    if (pickerField === 'mulai') {
+      setTanggalMulai(date);
+      // Jika tanggal mulai > selesai sekarang, ikutkan selesai
+      setTanggalSelesai(prev => (date > prev ? date : prev));
+    } else {
+      setTanggalSelesai(date);
+    }
   };
 
   const handleSubmit = async () => {
-    if (!tanggalMulai || !tanggalSelesai || !alasan.trim()) {
-      Alert.alert('Perhatian', 'Semua field wajib diisi');
-      return;
-    }
-
-    if (!validateDate(tanggalMulai) || !validateDate(tanggalSelesai)) {
-      Alert.alert('Format Salah', 'Format tanggal: YYYY-MM-DD (Contoh: 2024-01-15)');
+    if (!alasan.trim()) {
+      Alert.alert('Perhatian', 'Alasan/Keterangan wajib diisi');
       return;
     }
 
@@ -52,8 +79,8 @@ const AjukanIzinScreen = ({navigation}) => {
     try {
       const formData = new FormData();
       formData.append('jenis', jenis);
-      formData.append('tanggal_mulai', tanggalMulai);
-      formData.append('tanggal_selesai', tanggalSelesai);
+      formData.append('tanggal_mulai', formatDateToString(tanggalMulai));
+      formData.append('tanggal_selesai', formatDateToString(tanggalSelesai));
       formData.append('alasan', alasan.trim());
 
       await leaveService.create(formData);
@@ -104,31 +131,21 @@ const AjukanIzinScreen = ({navigation}) => {
 
         {/* Tanggal Mulai */}
         <Text style={styles.label}>Tanggal Mulai</Text>
-        <View style={styles.inputContainer}>
-          <Icon name="calendar-outline" size={18} color={COLORS.gray} style={styles.inputIcon} />
-          <TextInput
-            style={styles.input}
-            placeholder="YYYY-MM-DD (contoh: 2024-01-15)"
-            placeholderTextColor={COLORS.gray}
-            value={tanggalMulai}
-            onChangeText={setTanggalMulai}
-            keyboardType="numeric"
-          />
-        </View>
+        <TouchableOpacity
+          style={styles.datePickerButton}
+          onPress={openStartDatePicker}>
+          <Icon name="calendar-outline" size={18} color={COLORS.primary} />
+          <Text style={styles.datePickerText}>{formatDateToString(tanggalMulai)}</Text>
+        </TouchableOpacity>
 
         {/* Tanggal Selesai */}
         <Text style={styles.label}>Tanggal Selesai</Text>
-        <View style={styles.inputContainer}>
-          <Icon name="calendar-outline" size={18} color={COLORS.gray} style={styles.inputIcon} />
-          <TextInput
-            style={styles.input}
-            placeholder="YYYY-MM-DD (contoh: 2024-01-15)"
-            placeholderTextColor={COLORS.gray}
-            value={tanggalSelesai}
-            onChangeText={setTanggalSelesai}
-            keyboardType="numeric"
-          />
-        </View>
+        <TouchableOpacity
+          style={styles.datePickerButton}
+          onPress={openEndDatePicker}>
+          <Icon name="calendar-outline" size={18} color={COLORS.primary} />
+          <Text style={styles.datePickerText}>{formatDateToString(tanggalSelesai)}</Text>
+        </TouchableOpacity>
 
         {/* Alasan */}
         <Text style={styles.label}>Alasan / Keterangan</Text>
@@ -147,7 +164,7 @@ const AjukanIzinScreen = ({navigation}) => {
         <View style={styles.infoBox}>
           <Icon name="information-circle-outline" size={16} color={COLORS.info} />
           <Text style={styles.infoText}>
-            Permohonan akan diproses oleh admin dalam 1-2 hari kerja.
+            Permohonan akan diproses oleh atasan Anda. Pastikan semua informasi yang diberikan sudah benar sebelum mengajukan permohonan.
           </Text>
         </View>
 
@@ -171,6 +188,16 @@ const AjukanIzinScreen = ({navigation}) => {
         </TouchableOpacity>
       </View>
     </ScrollView>
+
+      {showPicker && (
+        <DateTimePicker
+          value={pickerField === 'mulai' ? tanggalMulai : tanggalSelesai}
+          mode="date"
+          display="default"
+          minimumDate={pickerField === 'selesai' ? tanggalMulai : undefined}
+          onChange={onDateChange}
+        />
+      )}
     </SafeAreaView>
   );
 };
@@ -202,7 +229,7 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.primaryLight,
   },
   jenisBtnText: {fontSize: 13, fontWeight: '600', color: COLORS.gray},
-  inputContainer: {
+  datePickerButton: {
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: COLORS.white,
@@ -210,9 +237,16 @@ const styles = StyleSheet.create({
     borderWidth: 1.5,
     borderColor: COLORS.border,
     paddingHorizontal: 12,
+    height: 48,
+    gap: 10,
+    marginBottom: 14,
   },
-  inputIcon: {marginRight: 8},
-  input: {flex: 1, height: 48, fontSize: 15, color: COLORS.dark},
+  datePickerText: {
+    flex: 1,
+    fontSize: 15,
+    color: COLORS.dark,
+    fontWeight: '500',
+  },
   textArea: {
     backgroundColor: COLORS.white,
     borderRadius: 12,

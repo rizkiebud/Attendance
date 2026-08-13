@@ -21,7 +21,7 @@ const SplashScreen = ({onFinish}) => {
 
   return (
     <Animated.View style={[styles.container, {opacity: fadeAnim}]}>
-      <StatusBar barStyle="light-content" backgroundColor={COLORS.primaryDark} />
+      <StatusBar barStyle="light-content" backgroundColor={COLORS.primary} />
       <SafeAreaView style={styles.inner}>
         <View style={styles.logoContainer}>
           <Image source={require('../assets/logo.png')} style={styles.logo} />
